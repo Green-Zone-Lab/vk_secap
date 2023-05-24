@@ -1,0 +1,16 @@
+nadkategorija,kategorija,broj zgrada,energent,ukupna_grijana_površina,potrošnja_toplinske_energije(kWH),specifična_potrošnja_toplinske_energije(kWh/m2)
+zgrade javne namjene,školstvo,14,prirodni plin,23399.36,3219444.26,137.59
+zgrade javne namjene,školstvo,14,lož ulje,107.5,15304.42,142.37
+zgrade javne namjene,uprava,15,prirodni plin,4123.35,593800.58,144.01
+zgrade javne namjene,uprava,15,električna energija,210,37800,180
+zgrade javne namjene,kulturne ustanove,8,prirodni plin,5809.25,657677.56,113.21
+zgrade javne namjene,kulturne ustanove,8,lož ulje,812,63258.26,77.9
+zgrade javne namjene,objekti i uredi gradskih tvrtki,6,prirodni plin,3629.2,473136.97,130.37
+stambeni objekti,stambeni sektor,13326,prirodni plin,595855,85563071.34,143.6
+stambeni objekti,stambeni sektor,13326,lož ulje,32000,5760003.51,180
+stambeni objekti,stambeni sektor,13326,ogrjevno drvo,229171,41250808.53,180
+stambeni objekti,stambeni sektor,13326,električna energija,82348,15646120,190
+zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,prirodni plin,538085,62307560.56,116
+zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,lož ulje,35785,6441282,180
+zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,ogrjevno drvo,128826,23188615.2,180
+zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,električna energija,13002,2340448,180

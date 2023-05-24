@@ -1,0 +1,9 @@
+nadkategorija,kategorija,podkategorija,broj zgrada,potrošnja_električne_energije(kWh),specifična_potrošnja_električne_energije(kWh/m2)
+zgrade javne namjene,školstvo,dječji vrtići,6,65388,24
+zgrade javne namjene,školstvo,osnovne škole,7,390502,19
+zgrade javne namjene,uprava,gradska uprava,2,84055,40
+zgrade javne namjene,uprava,mjesna samouprava,12,37411,17
+zgrade javne namjene,kulturne ustanove,kulturne ustanove,7,125700,18.98
+zgrade javne namjene,objekti I uredi gradskih tvrtki,objekti I uredi gradskih tvrtki,6,98861,27.24
+stambeni objekti,stambeni sektor,stambeni sektor,13326,54014000,40.84
+zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,komercijalne I uslužne djelatnosti,397,27390000,35
