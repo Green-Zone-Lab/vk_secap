@@ -1,0 +1,8 @@
+vrsta_prijevoza,broj,procijenjena_potrošena_masa_benzina(t),procijenjena_potrošena_masa_dizela(t),procijenjena_potrošena_masa_unp(t),procijenjena_potrošnja_goriva(kWh),broj_dizelskih,broj_putničkih_mjesta,potrošnja_dizelskog_goriva(l),prijeđeni_kilometri,broj_preveznih_putnika
+autobusni,58,,58.9,,699299.1,58,3257,157982,548818,236904
+željeznički,10585,,,,,,,360870,400000,3000000
+taxi,1,,,,,1,,1850,,
+osobna vozila,10005,2194.8,1047,44.9,40191449.6,,,,,
+teretna I radna vozila,2102,108.1,1557,,19810355.8,,,,,
+mopedi i motocikli,910,53,,,657072.6,,,,,
+kombinirana vozila,39,,,,,,,,,
