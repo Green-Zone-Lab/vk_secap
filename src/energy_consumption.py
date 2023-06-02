@@ -9,6 +9,7 @@ class EnergyCharts:
     sns.set_style()
 
     def __init__(self):
+        self.n_residents_2011 = 35.312
         self.colors = sns.color_palette('pastel')[0:5]
         self.heating_2011 = pd.read_csv(
             root_dir / 'data/vinkovci_grijanje_2011.csv'
@@ -110,4 +111,8 @@ class EnergyCharts:
             bbox_inches='tight'
         )
         return chart
+
+    def energy_per_capita(self):
+       toplinska_per_capita = self.heating_2011["potrošnja_toplinske_energije(kWh)"].sum() / self.n_residents_2011
+       print(toplinska_per_capita)
 
