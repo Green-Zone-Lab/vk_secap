@@ -137,3 +137,21 @@ class Energy2011:
             bbox_inches='tight'
         )
         return chart
+
+    def illumination(self):
+        source = ['natrijeve sijalice', 'metalhalogene sijalice']
+        quantity = [4493, 84]
+
+        df = pd.DataFrame({'vrsta_izvora': source, 'broj': quantity})
+        chart = plt.pie(
+            df["broj"],
+            colors=self.colors,
+            labels=df.vrsta_izvora,  # Use the index (vrsta_prijevoza) as labels
+            autopct='%.0f%%'
+        )
+        plt.savefig(
+            root_dir / 'charts/struktura_rasvjete_2011.png',
+            dpi=300,
+            bbox_inches='tight'
+        )
+        return chart

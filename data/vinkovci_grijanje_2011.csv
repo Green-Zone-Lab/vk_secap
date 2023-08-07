@@ -1,4 +1,4 @@
-nadkategorija,kategorija,broj zgrada,energent,ukupna_grijana_površina,potrošnja_toplinske_energije(kWh),specifična_potrošnja_toplinske_energije(kWh/m2)
+nadkategorija,kategorija,broj zgrada,energent,ukupna_grijana_površina,potrošnja_energije(kWh),specifična_potrošnja_energije(kWh/m2)
 zgrade javne namjene,školstvo,14,prirodni plin,23399.36,3219444.26,137.59
 zgrade javne namjene,školstvo,14,lož ulje,107.5,15304.42,142.37
 zgrade javne namjene,uprava,15,prirodni plin,4123.35,593800.58,144.01
@@ -10,7 +10,7 @@ stambeni objekti,stambeni sektor,13326,prirodni plin,595855,85563071.34,143.6
 stambeni objekti,stambeni sektor,13326,lož ulje,32000,5760003.51,180
 stambeni objekti,stambeni sektor,13326,ogrjevno drvo,229171,41250808.53,180
 stambeni objekti,stambeni sektor,13326,električna energija,82348,15646120,190
-zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,prirodni plin,538085,62307560.56,116
-zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,lož ulje,35785,6441282,180
-zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,ogrjevno drvo,128826,23188615.2,180
-zgrade komercijalnog I uslužnog karaktera,komercijalne I uslužne djelatnosti,397,električna energija,13002,2340448,180
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,397,prirodni plin,538085,62307560.56,116
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,397,lož ulje,35785,6441282,180
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,397,ogrjevno drvo,128826,23188615.2,180
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,397,električna energija,13002,2340448,180
