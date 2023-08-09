@@ -1,6 +1,6 @@
-vrsta_prijevoza,broj,procijenjena_potrošena_masa_benzina(t),procijenjena_potrošena_masa_dizela(t),procijenjena_potrošena_masa_unp(t),potrošnja_energije(kWh)
-autobusni,6,,13.9,,179119.3
-taxi,1,,1.6,,18272
-osobna vozila,10005,2194.8,1047,44.9,40191449.6
-teretna i radna vozila,2102,108.1,1557,,19810355.8
-mopedi i motocikli,910,53,,,657072.6
+vrsta_prijevoza,broj,procijenjena_potrošena_masa_benzina(t),procijenjena_potrošena_masa_dizela(t),procijenjena_potrošena_masa_unp(t)
+autobusni,6,,13.9,
+taxi,1,,1.6,
+osobna vozila,10005,2194.8,1047,44.9
+teretna i radna vozila,2102,108.1,1557,
+mopedi i motocikli,910,53,,
