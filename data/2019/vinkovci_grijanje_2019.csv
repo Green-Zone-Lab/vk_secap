@@ -1,0 +1,8 @@
+nadkategorija,kategorija,broj zgrada,energent,potrošnja_plina_m3/lož_ulja_l,potrošnja_energije(kWh),,izvor
+zgrade javne namjene,školstvo,17,prirodni plin,367811,,,ISGE
+zgrade javne namjene,uprava i uredi gradskih tvrtki,20,prirodni plin,34919,,,ISGE
+zgrade javne namjene,kulturne ustanove,9,prirodni plin,39102,,,ISGE
+zgrade javne namjene,kulturne ustanove,9,lož ulje,3832,,,ISGE
+stambeni objekti,stambeni sektor,,prirodni plin,85563071.34,84202179,,Plinara istočne Slavonije
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,,prirodni plin,62307560.56,56945059,,Plinara istočne Slavonije
+ostalo,ostalo,5,prirodni plin,11536,,,ISGE

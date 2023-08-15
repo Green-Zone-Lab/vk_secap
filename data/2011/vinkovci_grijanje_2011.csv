@@ -1,6 +1,6 @@
 nadkategorija,kategorija,broj zgrada,energent,ukupna_grijana_površina,potrošnja_energije(kWh),specifična_potrošnja_energije(kWh/m2)
-zgrade javne namjene,školstvo,14,prirodni plin,23399.36,3219444.26,137.59
-zgrade javne namjene,školstvo,14,lož ulje,107.5,15304.42,142.37
+zgrade javne namjene,školstvo,15,prirodni plin,23399.36,3219444.26,137.59
+zgrade javne namjene,školstvo,15,lož ulje,107.5,15304.42,142.37
 zgrade javne namjene,uprava,15,prirodni plin,4123.35,593800.58,144.01
 zgrade javne namjene,uprava,15,električna energija,210,37800,180
 zgrade javne namjene,kulturne ustanove,8,prirodni plin,5809.25,657677.56,113.21
