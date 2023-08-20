@@ -2,6 +2,6 @@ nadkategorija,kategorija,broj zgrada,energent,potrošnja_energije(kWh),izvor
 zgrade javne namjene,školstvo,17,električna energija,403562,ISGE
 zgrade javne namjene,uprava i uredi gradskih tvrtki,20,električna energija,159961,ISGE
 zgrade javne namjene,kulturne ustanove,9,električna energija,80058,ISGE
-stambeni objekti,stambeni sektor,,električna energija,2614495,Plinara istočne Slavonije
-zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,,električna energija,26362482,Plinara istočne Slavonije
+stambeni objekti,stambeni sektor,14207,električna energija,35864413,HEP
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1983,električna energija,26362482,HEP
 ostalo,ostalo,5,električna energija,27007,ISGE

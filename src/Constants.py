@@ -22,10 +22,15 @@ class Constants:
     co2_electricity_mwh_ton_2011: float
     co2_electricity_mwh_ton_2019: float
 
+    hh_heat_natgas_share = 0.577
+    hh_heat_heatoil_share = 0.0389
+    hh_heat_wood_share = 0.278
+    hh_heat_electricity_share = 0.106
+
     def __init__(self):
         current_script_path = Path(__file__)
         parent_dir = current_script_path.parents[1]
-        file_path = parent_dir / "data" / "JRC-COM-NEEFE_1990-2020.xlsx"
+        file_path = parent_dir / "data" / "public_data/JRC-COM-NEEFE_1990-2020.xlsx"
 
         df = pd.read_excel(file_path, sheet_name=1, skiprows=1, engine='openpyxl')
         # set the value for Croatia for the year 2011 and 2019
