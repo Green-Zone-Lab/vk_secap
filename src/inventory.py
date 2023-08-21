@@ -87,7 +87,7 @@ class Inventory:
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
-        ax.set_xlabel("log Ukupna potrošnja energije (MWh)", fontsize=9)
+        ax.set_xlabel("Ukupna potrošnja energije (MWh)", fontsize=9)
         ax.set_ylabel("")
 
         #if log:
@@ -110,12 +110,12 @@ class Inventory:
             colors2 = [self.colors[energent] for energent in data2.columns]
 
             # Plot the first year's data with slightly reduced alpha for distinction
-            bars = merged_data['Year1'].plot(kind='barh', stacked=True, ax=ax, width=0.3, color=colors1, position=0, alpha=0.8, label=[f"{year1} - {col}" for col in data1.columns])
-            for bar in bars.patches:
-                bar.set_hatch('...')
+            merged_data['Year1'].plot(kind='barh', stacked=True, ax=ax, width=0.3, color=colors1, position=0, alpha=0.6,
+                                      label=[f"{year1} - {col}" for col in data1.columns])
 
             # Plot the second year's data
-            merged_data['Year2'].plot(kind='barh', stacked=True, ax=ax, width=0.3, color=colors2, position=1, alpha=1.0, label=[f"{year2} - {col}" for col in data2.columns])
+            merged_data['Year2'].plot(kind='barh', stacked=True, ax=ax, width=0.3, color=colors2, position=1, alpha=1,
+                                      label=[f"{year2} - {col}" for col in data2.columns])
             legend_labels = [f"{year1} - {col}" for col in data1.columns] + [f"{year2} - {col}" for col in
                                                                              data2.columns]
             handles, _ = ax.get_legend_handles_labels()
@@ -123,11 +123,9 @@ class Inventory:
                       bbox_to_anchor=(1, 1))
 
         except AttributeError:
-            bars = merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.8,
+            merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.6,
                                              label=f"{year1}")
-            for bar in bars.patches:
-                bar.set_hatch('...')
-            merged_data['Year2'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.8,
+            merged_data['Year2'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=1, alpha=1,
                                   label=f"{year2}")
 
         ax.grid(axis='x', linestyle='--', alpha=0.7)
@@ -411,6 +409,7 @@ if __name__ == "__main__":
 
     #group heat to fit 2019 format
     heat['kategorija'] = heat['kategorija'].replace('objekti i uredi gradskih tvrtki', 'uprava i uredi gradskih tvrtki')
+    heat['kategorija'] = heat['kategorija'].replace('uprava', 'uprava i uredi gradskih tvrtki')
     heat = heat.groupby(['nadkategorija', 'kategorija', 'energent'], as_index=False).sum()
 
     base_inventory_2011 = Inventory(constants, 2011)

@@ -22,10 +22,29 @@ class Constants:
     co2_electricity_mwh_ton_2011: float
     co2_electricity_mwh_ton_2019: float
 
-    hh_heat_natgas_share = 0.577
+    density_heatoil = 840  # kg/m3
+    upper_heat_value_heatoil = 12.611  # kwh/kg
+
+    upper_heat_value_natgas = 12.75  # kwh/m3
+
+    # household fuel share
+    hh_heat_natgas_share = 0.5773
     hh_heat_heatoil_share = 0.0389
-    hh_heat_wood_share = 0.278
-    hh_heat_electricity_share = 0.106
+    hh_heat_wood_share = 0.2783
+    hh_heat_electricity_share = 0.1056
+
+    commercial_heat_natgas_share = 0.6609
+    commercial_heat_heatoil_share = 0.0683
+    commercial_heat_wood_share = 0.2460
+    commercial_heat_electricity_share = 0.0248
+
+    specific_consumption_diesel_2005 = 0.0663  # l/km
+    specific_consumption_petrol_2005 = 0.0781  # l/km
+
+    specific_consumption_diesel_2000 = 0.0691  # l/km
+    specific_consumption_petrol_2000 = 0.0813  # l/km
+    specific_consumption_total_2000 = 0.078075 # l/km
+
 
     def __init__(self):
         current_script_path = Path(__file__)
