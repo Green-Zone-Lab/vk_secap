@@ -90,8 +90,8 @@ class Inventory:
         ax.set_xlabel("Ukupna potrošnja energije (MWh)", fontsize=9)
         ax.set_ylabel("")
 
-        #if log:
-            #ax.set_xscale('log')
+        # if log:
+        # ax.set_xscale('log')
 
         return fig
 
@@ -124,9 +124,9 @@ class Inventory:
 
         except AttributeError:
             merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.6,
-                                             label=f"{year1}")
+                                      label=f"{year1}")
             merged_data['Year2'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=1, alpha=1,
-                                  label=f"{year2}")
+                                      label=f"{year2}")
 
         ax.grid(axis='x', linestyle='--', alpha=0.7)
         plt.rc('axes', labelsize='x-small')
@@ -139,7 +139,6 @@ class Inventory:
         #     ax.set_xscale('log')
 
         return fig
-
 
     def pie(self, data):
         sns.set_theme()
@@ -407,7 +406,7 @@ if __name__ == "__main__":
     trans = pd.read_csv(root_dir / 'data/2011/privatna_vozila_2011.csv')
     light = ['električna energija', 2922.5, 678.0, 'javna rasvjeta']
 
-    #group heat to fit 2019 format
+    # group heat to fit 2019 format
     heat['kategorija'] = heat['kategorija'].replace('objekti i uredi gradskih tvrtki', 'uprava i uredi gradskih tvrtki')
     heat['kategorija'] = heat['kategorija'].replace('uprava', 'uprava i uredi gradskih tvrtki')
     heat = heat.groupby(['nadkategorija', 'kategorija', 'energent'], as_index=False).sum()
@@ -431,9 +430,9 @@ if __name__ == "__main__":
 
     for key in inventory_2019.keys():
         comparison_fig = base_inventory_2019.compare_stacked_bar(
-        inventory_2011[key],
-        inventory_2019[key],
-        '2011',
-        '2019'
+            inventory_2011[key],
+            inventory_2019[key],
+            '2011',
+            '2019'
         )
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
