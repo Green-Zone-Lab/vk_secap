@@ -6,7 +6,8 @@ import pandas as pd
 
 @dataclass
 class Constants:
-    population_2011 = 35312
+    population_2011 = 32029
+    population_2021 = 28247
     diesel_ton_mwh = 11.9
     petrol_ton_mwh = 12.3
     lpg_ton_mwh = 13.1
@@ -24,7 +25,6 @@ class Constants:
 
     density_heatoil = 840  # kg/m3
     upper_heat_value_heatoil = 12.611  # kwh/kg
-
     upper_heat_value_natgas = 12.75  # kwh/m3
 
     # household fuel share
@@ -43,8 +43,15 @@ class Constants:
 
     specific_consumption_diesel_2000 = 0.0691  # l/km
     specific_consumption_petrol_2000 = 0.0813  # l/km
-    specific_consumption_total_2000 = 0.078075 # l/km
+    specific_consumption_total_2000 = 0.078075  # l/km
 
+    specific_consumption_hybrid = 0.042  # l/km
+
+    petrol_litre_to_ton = 0.000737  # t/l
+    diesel_litre_to_ton = 0.000885  # t/l
+    lpg_litre_to_ton = 0.00054  # t/l
+
+    lpg_petrol_index = 1.15
 
     def __init__(self):
         current_script_path = Path(__file__)

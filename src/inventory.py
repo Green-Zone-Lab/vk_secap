@@ -2,9 +2,17 @@ import seaborn as sns
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
-from Constants import Constants
+from .Constants import Constants
 
 root_dir = Path(__file__).parents[1]
+
+def comma_decimal(x, _):
+    return "{:.1f}".format(x).replace('.', ',')
+
+
+def comma_decimal_percent(pct):
+    return "{:.1f}".format(pct).replace('.', ',') + '%'
+
 
 
 class Inventory:
@@ -12,6 +20,8 @@ class Inventory:
         color_palette = sns.color_palette()
 
         pd.set_option('display.float_format', lambda x: '%.1f' % x)
+
+        self.constants = constants
 
         self.co2_factors = {
             "Dizel": constants.co2_diesel_mwh_ton,
@@ -47,7 +57,7 @@ class Inventory:
 
         }
 
-    def stacked_bar(self, data, log=False):
+    def stacked_bar(self, data, title):
         sns.set_theme()
         sns.set_style()
         color_palette = sns.color_palette()
@@ -74,6 +84,7 @@ class Inventory:
         }
 
         fig, ax = plt.subplots(figsize=(10, 6))
+        legend = None
         try:
             colors = [self.colors[energent] for energent in data.columns]
             data.plot(kind='barh', stacked=True, ax=ax, width=0.5, color=colors)
@@ -87,7 +98,18 @@ class Inventory:
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
 
-        ax.set_xlabel("Ukupna potrošnja energije (MWh)", fontsize=9)
+        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
+                  in ax.get_xticklabels()]
+        ax.set_xticklabels(labels)
+        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
+                  in ax.get_yticklabels()]
+        ax.set_yticklabels(labels)
+
+        if legend:  # Check if a legend exists
+            for text in legend.get_texts():
+                text.set_text(text.get_text().capitalize())
+
+        ax.set_xlabel(title, fontsize=9)
         ax.set_ylabel("")
 
         # if log:
@@ -95,7 +117,7 @@ class Inventory:
 
         return fig
 
-    def compare_stacked_bar(self, data1, data2, year1, year2, log=False):
+    def compare_stacked_bar(self, data1, data2, year1, year2, title):
         sns.set_theme()
         sns.set_style()
 
@@ -105,6 +127,7 @@ class Inventory:
         merged_data = pd.concat([data1, data2], axis=1, keys=['Year1', 'Year2'])
 
         # Get the colors for each energent
+        legend = None
         try:
             colors1 = [self.colors[energent] for energent in data1.columns]
             colors2 = [self.colors[energent] for energent in data2.columns]
@@ -119,7 +142,7 @@ class Inventory:
             legend_labels = [f"{year1} - {col}" for col in data1.columns] + [f"{year2} - {col}" for col in
                                                                              data2.columns]
             handles, _ = ax.get_legend_handles_labels()
-            ax.legend(handles[:len(legend_labels)], legend_labels, fontsize='x-small', loc='upper left',
+            legend = ax.legend(handles[:len(legend_labels)], legend_labels, fontsize='x-small', loc='upper left',
                       bbox_to_anchor=(1, 1))
 
         except AttributeError:
@@ -132,8 +155,19 @@ class Inventory:
         plt.rc('axes', labelsize='x-small')
         plt.rc('xtick', labelsize='x-small')
         plt.rc('ytick', labelsize='x-small')
-        ax.set_xlabel("log Ukupna potrošnja energije (MWh)", fontsize=9)
+        ax.set_xlabel(title, fontsize=9)
         ax.set_ylabel("")
+
+        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
+                  in ax.get_xticklabels()]
+        ax.set_xticklabels(labels)
+        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
+                  in ax.get_yticklabels()]
+        ax.set_yticklabels(labels)
+
+        if legend:
+            for text in legend.get_texts():
+                text.set_text(text.get_text().capitalize())
 
         # if log:
         #     ax.set_xscale('log')
@@ -147,40 +181,42 @@ class Inventory:
 
         self.colors = {
             # fuels
-            'lož ulje': color_palette[1],  # 'orange'
-            'električna energija': color_palette[0],  # 'blue'
-            'prirodni plin': color_palette[3],  # 'red'
-            'ogrjevno drvo': color_palette[5],  # 'green'
+            'Lož ulje': color_palette[1],  # 'orange'
+            'Električna energija': color_palette[0],  # 'blue'
+            'Prirodni plin': color_palette[3],  # 'red'
+            'Ogrjevno drvo': color_palette[5],  # 'green'
             'Dizel': color_palette[8],
             'Benzin': color_palette[9],
-            'UNP': color_palette[6],
+            'Unp': color_palette[6],
 
             # buildings
-            'stambeni objekti': color_palette[0],  # 'blue'
-            'zgrade komercijalnog i uslužnog karaktera': color_palette[1],  # 'orange',
-            'zgrade javne namjene': color_palette[2],  # 'green'
+            'Stambeni objekti': color_palette[0],  # 'blue'
+            'Zgrade komercijalnog i uslužnog karaktera': color_palette[1],  # 'orange',
+            'Zgrade javne namjene': color_palette[2],  # 'green'
 
             # transport
-            'teretna i radna vozila': color_palette[6],
-            'osobna vozila': color_palette[7],
-            'ostalo': color_palette[8],
-            'autobusni': color_palette[9],
-            'mopedi i motocikli': color_palette[4],
+            'Teretna i radna vozila': color_palette[6],
+            'Osobna vozila': color_palette[7],
+            'Ostalo': color_palette[8],
+            'Autobusni': color_palette[9],
+            'Mopedi i motocikli': color_palette[4],
 
             # sectors
-            'javna rasvjeta': color_palette[5],  # 'red
-            'zgradarstvo': color_palette[7],
-            'promet': color_palette[0],
+            'Javna rasvjeta': color_palette[5],  # 'red
+            'Zgradarstvo': color_palette[7],
+            'Promet': color_palette[0],
 
         }
 
         fig, ax = plt.subplots(figsize=(10, 6))
+        data.index = data.index.str.capitalize()
         data.plot.pie(
-            autopct='%1.1f%%', startangle=90,
+            autopct=comma_decimal_percent, startangle=90,
             colors=[self.colors[energent] for energent in data.index],
             ax=ax
         )
         ax.set_ylabel('')
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(comma_decimal))
 
         return fig
 
@@ -218,7 +254,7 @@ class Inventory:
         heat_pivot['Total'] = heat_pivot.sum(axis=1)
         heat_pivot = heat_pivot.sort_values(by='Total', ascending=True).drop(columns=['Total'])
 
-        heat_by_sector = self.stacked_bar(heat_pivot, log=True)
+        heat_by_sector = self.stacked_bar(heat_pivot, title='Potrošnja energije (MWh)')
         heat_by_sector.savefig(output_dir / 'potrošnja_toplinske.png', dpi=300, bbox_inches='tight')
 
         # stacked bar for heat CO2 by sector and fuel
@@ -228,7 +264,8 @@ class Inventory:
         heat_co2_pivot['Total'] = heat_co2_pivot.sum(axis=1)
         heat_co2_pivot = heat_co2_pivot.sort_values(by='Total', ascending=True).drop(columns=['Total'])
 
-        heat_co2_by_sector = self.stacked_bar(heat_co2_pivot, log=True)
+        heat_co2_by_sector = heat_co2_pivot.drop(columns=['ogrjevno drvo'])
+        heat_co2_by_sector = self.stacked_bar(heat_co2_by_sector, title='Emisije CO2 (t)')
         heat_co2_by_sector.savefig(output_dir / 'emisije_co2_toplinske.png', dpi=300, bbox_inches='tight')
 
         # heat pie by fuel
@@ -261,13 +298,13 @@ class Inventory:
         # total electricity consumption
         ele_bar = ele.groupby('kategorija')['potrošnja_energije(MWh)'].sum()
         ele_bar = ele_bar.sort_values(ascending=True).drop(columns=['Total'])
-        ele_bar_fig = self.stacked_bar(ele_bar, log=True)
+        ele_bar_fig = self.stacked_bar(ele_bar, title='Potrošnja energije (MWh)')
         ele_bar_fig.savefig(output_dir / 'potrošnja_električne.png', dpi=300, bbox_inches='tight')
 
         # electricity co2 emissions
         ele_co2_bar = ele.groupby('kategorija')['Emisije CO2 (t)'].sum()
         ele_co2_bar = ele_co2_bar.sort_values(ascending=True)
-        ele_co2_bar_fig = self.stacked_bar(ele_co2_bar)
+        ele_co2_bar_fig = self.stacked_bar(ele_co2_bar, title='Emisije CO2 (t)')
         ele_co2_bar_fig.savefig(output_dir / 'emisije_co2_električne.png', dpi=300, bbox_inches='tight')
 
         # pie charts
@@ -282,9 +319,9 @@ class Inventory:
         """transport data"""
         trans = trans.loc[trans['vrsta_prijevoza'] != 'taxi']
         trans = trans.fillna(0)
-        trans['Dizel'] = trans['procijenjena_potrošena_masa_dizela(t)'] * constants.diesel_ton_mwh
-        trans['Benzin'] = trans['procijenjena_potrošena_masa_benzina(t)'] * constants.petrol_ton_mwh
-        trans['UNP'] = trans['procijenjena_potrošena_masa_unp(t)'] * constants.lpg_ton_mwh
+        trans['Dizel'] = trans['procijenjena_potrošena_masa_dizela(t)'] * self.constants.diesel_ton_mwh
+        trans['Benzin'] = trans['procijenjena_potrošena_masa_benzina(t)'] * self.constants.petrol_ton_mwh
+        trans['UNP'] = trans['procijenjena_potrošena_masa_unp(t)'] * self.constants.lpg_ton_mwh
 
         order = ['Dizel', 'Benzin', 'UNP']
         trans_pivot = trans.set_index('vrsta_prijevoza')
@@ -292,7 +329,7 @@ class Inventory:
         trans_pivot['Total'] = trans_pivot.sum(axis=1)
         trans_pivot = trans_pivot.sort_values(by='Total', ascending=True).drop(columns=['Total'])
 
-        trans_pivot_fig = self.stacked_bar(trans_pivot)
+        trans_pivot_fig = self.stacked_bar(trans_pivot, title='Potrošnja energije (MWh)')
         trans_pivot_fig.savefig(output_dir / 'potrošnja_energije_transport.png', dpi=300, bbox_inches='tight')
 
         trans_pie_1 = trans_pivot.sum(axis=1)
@@ -320,7 +357,7 @@ class Inventory:
         trans_co2_melted['Total'] = trans_co2_melted.sum(axis=1)
         trans_co2_melted = trans_co2_melted.sort_values(by='Total', ascending=True).drop(columns=['Total'])
 
-        trans_co2_fig = self.stacked_bar(trans_co2_melted)
+        trans_co2_fig = self.stacked_bar(trans_co2_melted, title='Emisije CO2 (t)')
         trans_co2_fig.savefig(output_dir / 'transport_co2.png', dpi=300, bbox_inches='tight')
 
         trans_co2_vrsta_vozila = trans_co2_melted.sum(axis=1)
@@ -357,7 +394,7 @@ class Inventory:
         order = ['električna energija', 'Dizel', 'UNP', 'Benzin', 'lož ulje', 'ogrjevno drvo', 'prirodni plin']
         total_bar = total_bar[order]
 
-        total_fig = self.stacked_bar(total_bar)
+        total_fig = self.stacked_bar(total_bar, title='Potrošnja energije (MWh)')
         total_fig.savefig(output_dir / 'ukupna_potrošnja.png', dpi=300, bbox_inches='tight')
 
         total_pie_1 = total.groupby('sektor')['potrošnja_energije(MWh)'].sum()
@@ -371,10 +408,10 @@ class Inventory:
         # co2 chart
         total_co2_bar = total.groupby(['sektor', 'energent']).agg({'Emisije CO2 (t)': 'sum'}).reset_index()
         total_co2_bar = total_co2_bar.pivot(index='sektor', columns='energent', values='Emisije CO2 (t)').fillna(0)
-        order = ['električna energija', 'Dizel', 'UNP', 'Benzin', 'lož ulje', 'ogrjevno drvo', 'prirodni plin']
+        order = ['električna energija', 'Dizel', 'UNP', 'Benzin', 'lož ulje', 'prirodni plin']
         total_co2_bar = total_co2_bar[order]
 
-        total_co2_fig = self.stacked_bar(total_co2_bar)
+        total_co2_fig = self.stacked_bar(total_co2_bar, title='Emisije CO2 (t)')
         total_co2_fig.savefig(output_dir / 'ukupne_emisije_co2.png', dpi=300, bbox_inches='tight')
 
         total_co2_pie_1 = total.groupby('sektor')['Emisije CO2 (t)'].sum()
@@ -382,6 +419,7 @@ class Inventory:
         total_co2_pie_1_fig.savefig(output_dir / 'ukupne_emisije_po_sektoru.png', dpi=300, bbox_inches='tight')
 
         total_co2_pie_2 = total.groupby('energent')['Emisije CO2 (t)'].sum()
+        total_co2_pie_2 = total_co2_pie_2.drop('ogrjevno drvo')
         total_co2_pie_2_fig = self.pie(total_co2_pie_2)
         total_co2_pie_2_fig.savefig(output_dir / 'ukupne_emisije_po_energentu.png', dpi=300, bbox_inches='tight')
 
@@ -406,10 +444,66 @@ if __name__ == "__main__":
     trans = pd.read_csv(root_dir / 'data/2011/privatna_vozila_2011.csv')
     light = ['električna energija', 2922.5, 678.0, 'javna rasvjeta']
 
+    # fuel consumption is 2011 is too low, adjust to the same calculation as in 2019
+    km_per_vehicle = 12542 # same km per year per vehicle
+    factor = constants.specific_consumption_petrol_2000 / constants.specific_consumption_diesel_2000 # how much more petrol is spent
+    # adjust the fuel to get proportions
+    petrol_adj = trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
+                     'procijenjena_potrošena_masa_benzina(t)'] / factor
+    lpg_adj = trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila']['procijenjena_potrošena_masa_unp(t)'] / factor
+    diesel_adj = trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila']['procijenjena_potrošena_masa_dizela(t)']
+    total = petrol_adj + lpg_adj + diesel_adj
+
+    prop_petrol = petrol_adj / total
+    prop_lpg = lpg_adj / total
+    prop_diesel = diesel_adj / total
+
+    # calculate tons of fuel
+    diesel_spent = prop_diesel * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
+    petrol_spent = prop_petrol * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+    lpg_spent = prop_lpg * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.lpg_petrol_index * constants.lpg_litre_to_ton
+
+    # fix values for cars
+    trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
+    trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila', 'procijenjena_potrošena_masa_dizela(t)'] = diesel_spent
+    trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila', 'procijenjena_potrošena_masa_unp(t)'] = lpg_spent
+
+    # fix values for trucks
+    petrol_adj = trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
+                     'procijenjena_potrošena_masa_benzina(t)'] / factor
+    diesel_adj = trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila']['procijenjena_potrošena_masa_dizela(t)']
+    total = petrol_adj + diesel_adj
+
+    prop_petrol = petrol_adj / total
+    prop_diesel = diesel_adj / total
+
+    diesel_spent = prop_diesel * trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
+    petrol_spent = prop_petrol * trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+
+    trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
+    trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_dizela(t)'] = diesel_spent
+
+    # fix values for bikes
+    petrol_spent = trans.loc[trans['vrsta_prijevoza'] == 'mopedi i motocikli'][
+        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+    trans.loc[
+        trans['vrsta_prijevoza'] == 'mopedi i motocikli', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
+
+
     # group heat to fit 2019 format
     heat['kategorija'] = heat['kategorija'].replace('objekti i uredi gradskih tvrtki', 'uprava i uredi gradskih tvrtki')
     heat['kategorija'] = heat['kategorija'].replace('uprava', 'uprava i uredi gradskih tvrtki')
     heat = heat.groupby(['nadkategorija', 'kategorija', 'energent'], as_index=False).sum()
+
+    # group electricity to fit 2019 format
+    ele['kategorija'] = ele['kategorija'].replace('objekti i uredi gradskih tvrtki', 'uprava i uredi gradskih tvrtki')
+    ele['kategorija'] = ele['kategorija'].replace('uprava', 'uprava i uredi gradskih tvrtki')
+    ele = ele.groupby(['nadkategorija', 'kategorija'], as_index=False).sum()
 
     base_inventory_2011 = Inventory(constants, 2011)
     inventory_2011 = base_inventory_2011.base_inventory(output_dir, heat, ele, trans, light)
