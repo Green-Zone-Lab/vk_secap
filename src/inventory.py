@@ -8,12 +8,21 @@ from .Constants import Constants
 
 root_dir = Path(__file__).parents[1]
 
+def adjust_label_distance(texts, autotexts):
+    for i, text in enumerate(texts):
+        if text.get_text() in ["Autobusni"]:
+            text.set_position((1.15*text.get_position()[0], 1.15*text.get_position()[1]))
+            autotexts[i].set_position((1.15*autotexts[i].get_position()[0], 1.15*autotexts[i].get_position()[1]))
+
 def comma_decimal(x, _):
-    return "{:.1f}".format(x).replace('.', ',')
+    return "{:.2f}".format(x).replace('.', ',')
 
 
-def comma_decimal_percent(pct):
-    return "{:.1f}".format(pct).replace('.', ',') + '%'
+def comma_decimal_percent(pct, allvals):
+    absolute = int(round(pct/100.*np.sum(allvals)))
+    if absolute == 0:
+        return ""
+    return "{:.1f}%".format(pct, absolute)
 
 
 
@@ -62,7 +71,7 @@ class Inventory:
         sns.set_theme()
         sns.set_style()
         SMALL_SIZE = 10
-        MEDIUM_SIZE = 12
+        MEDIUM_SIZE = 14
 
         plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
         plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
@@ -125,7 +134,7 @@ class Inventory:
         sns.set_theme()
         sns.set_style()
         SMALL_SIZE = 10
-        MEDIUM_SIZE = 12
+        MEDIUM_SIZE = 14
 
         color_palette = sns.color_palette()
 
@@ -207,8 +216,8 @@ class Inventory:
             energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
                               unique_labels.items()]
 
-            year_patches = [matplotlib.patches.Patch(color='gray', alpha=0.6, label=str(year1)),
-                            matplotlib.patches.Patch(color='gray', alpha=1, label=str(year2))]
+            year_patches = [matplotlib.patches.Patch(color='blue', alpha=0.4, label=str(year1)),
+                            matplotlib.patches.Patch(color='blue', alpha=1, label=str(year2))]
 
             legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left', bbox_to_anchor=(1, 1))
             legend_energy_height_per_item = 0.05  # this is an estimated height per item
@@ -229,7 +238,7 @@ class Inventory:
         sns.set_theme()
         sns.set_style()
         SMALL_SIZE = 10
-        MEDIUM_SIZE = 12
+        MEDIUM_SIZE = 14
 
         plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
         plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
@@ -270,11 +279,16 @@ class Inventory:
 
         fig, ax = plt.subplots(figsize=(10, 6))
         data.index = data.index.str.capitalize()
-        data.plot.pie(
-            autopct=comma_decimal_percent, startangle=90,
-            colors=[self.colors[energent] for energent in data.index],
-            ax=ax,
+        patches, texts, autotexts = ax.pie(
+            data.values,
+            labels=data.index.str.capitalize(),
+            autopct=lambda pct: comma_decimal_percent(pct, data.values),
+            startangle=90,
+            colors=[self.colors[energent] for energent in data.index]
         )
+
+        adjust_label_distance(texts, autotexts)
+
         ax.set_ylabel('')
         ax.yaxis.set_major_formatter(plt.FuncFormatter(comma_decimal))
 
@@ -368,11 +382,16 @@ class Inventory:
         ele_co2_bar_fig.savefig(output_dir / 'emisije_co2_električne.png', dpi=300, bbox_inches='tight')
 
         # pie charts
+
         ele_pie_1 = ele.groupby('nadkategorija')['potrošnja_energije(MWh)'].sum()
+        if 'ostalo' in ele_pie_1.index:
+            ele_pie_1 = ele_pie_1.drop('ostalo')
         ele_pie_1_fig = self.pie(ele_pie_1)
         ele_pie_1_fig.savefig(output_dir / 'potrošnja_električne_sektor.png', dpi=300, bbox_inches='tight')
 
         ele_co2_pie_1 = ele.groupby('nadkategorija')['Emisije CO2 (t)'].sum()
+        if 'ostalo' in ele_co2_pie_1.index:
+            ele_co2_pie_1 = ele_co2_pie_1.drop('ostalo')
         ele_co2_pie_1_fig = self.pie(ele_co2_pie_1)
         ele_co2_pie_1_fig.savefig(output_dir / 'emisije_co2_električne_sektor.png', dpi=300, bbox_inches='tight')
 
