@@ -1,3 +1,5 @@
+import matplotlib
+import numpy as np
 import seaborn as sns
 import pandas as pd
 from pathlib import Path
@@ -20,7 +22,6 @@ class Inventory:
         color_palette = sns.color_palette()
 
         pd.set_option('display.float_format', lambda x: '%.1f' % x)
-
         self.constants = constants
 
         self.co2_factors = {
@@ -60,6 +61,16 @@ class Inventory:
     def stacked_bar(self, data, title):
         sns.set_theme()
         sns.set_style()
+        SMALL_SIZE = 10
+        MEDIUM_SIZE = 12
+
+        plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+        plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+        plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+        plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
+
         color_palette = sns.color_palette()
 
         self.colors = {
@@ -88,28 +99,21 @@ class Inventory:
         try:
             colors = [self.colors[energent] for energent in data.columns]
             data.plot(kind='barh', stacked=True, ax=ax, width=0.5, color=colors)
-            legend = ax.legend(fontsize='x-small', loc='upper left', bbox_to_anchor=(1, 1))
-            plt.setp(legend.get_title(), fontsize='x-small')
+            legend = ax.legend(fontsize=MEDIUM_SIZE, loc='upper left', bbox_to_anchor=(1, 1))
+            plt.setp(legend.get_title(), fontsize='small')
         except AttributeError:
             data.plot(kind='barh', stacked=False, ax=ax, width=0.5)
         ax.grid(axis='x', linestyle='--', alpha=0.7)
 
-        plt.rc('axes', labelsize='x-small')
-        plt.rc('xtick', labelsize='x-small')
-        plt.rc('ytick', labelsize='x-small')
-
-        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
-                  in ax.get_xticklabels()]
-        ax.set_xticklabels(labels)
         labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
                   in ax.get_yticklabels()]
-        ax.set_yticklabels(labels)
+        ax.set_yticklabels(labels, fontsize=MEDIUM_SIZE)
 
         if legend:  # Check if a legend exists
             for text in legend.get_texts():
                 text.set_text(text.get_text().capitalize())
 
-        ax.set_xlabel(title, fontsize=9)
+        ax.set_xlabel(title, fontsize=MEDIUM_SIZE)
         ax.set_ylabel("")
 
         # if log:
@@ -120,6 +124,39 @@ class Inventory:
     def compare_stacked_bar(self, data1, data2, year1, year2, title):
         sns.set_theme()
         sns.set_style()
+        SMALL_SIZE = 10
+        MEDIUM_SIZE = 12
+
+        color_palette = sns.color_palette()
+
+        plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+        plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
+        plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+        plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
+
+        self.colors = {
+            'lož ulje': color_palette[1],  # 'orange'
+            'električna energija': color_palette[0],  # 'blue'
+            'prirodni plin': color_palette[3],  # 'red'
+            'ogrjevno drvo': color_palette[5],  # 'green'
+            'Dizel': color_palette[8],
+            'Benzin': color_palette[9],
+            'UNP': color_palette[6],
+
+            'stambeni objekti': color_palette[0],  # 'blue'
+            'zgrade komercijalnog i uslužnog karaktera': color_palette[1],  # 'orange',
+            'zgrade javne namjene': color_palette[2],  # 'green'
+
+            'teretna i radna vozila': color_palette[6],
+            'osobna vozila': color_palette[7],
+            'ostalo': color_palette[8],
+            'autobusni': color_palette[9],
+            'mopedi i motocikli': color_palette[4],
+
+        }
+
 
         fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -142,7 +179,7 @@ class Inventory:
             legend_labels = [f"{year1} - {col}" for col in data1.columns] + [f"{year2} - {col}" for col in
                                                                              data2.columns]
             handles, _ = ax.get_legend_handles_labels()
-            legend = ax.legend(handles[:len(legend_labels)], legend_labels, fontsize='x-small', loc='upper left',
+            legend = ax.legend(handles[:len(legend_labels)], legend_labels, fontsize=MEDIUM_SIZE, loc='upper left',
                       bbox_to_anchor=(1, 1))
 
         except AttributeError:
@@ -152,22 +189,36 @@ class Inventory:
                                       label=f"{year2}")
 
         ax.grid(axis='x', linestyle='--', alpha=0.7)
-        plt.rc('axes', labelsize='x-small')
-        plt.rc('xtick', labelsize='x-small')
-        plt.rc('ytick', labelsize='x-small')
-        ax.set_xlabel(title, fontsize=9)
-        ax.set_ylabel("")
 
-        labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
-                  in ax.get_xticklabels()]
-        ax.set_xticklabels(labels)
         labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
                   in ax.get_yticklabels()]
-        ax.set_yticklabels(labels)
+        ax.set_yticklabels(labels, fontsize=MEDIUM_SIZE)
 
-        if legend:
-            for text in legend.get_texts():
-                text.set_text(text.get_text().capitalize())
+        ax.set_xlabel(title, fontsize=MEDIUM_SIZE)
+        ax.set_ylabel("")
+
+        try:
+            unique_labels = {}
+            for energent in data1.columns:
+                unique_labels[energent] = self.colors[energent]
+            for energent in data2.columns:
+                unique_labels[energent] = self.colors[energent]
+
+            energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
+                              unique_labels.items()]
+
+            year_patches = [matplotlib.patches.Patch(color='gray', alpha=0.6, label=str(year1)),
+                            matplotlib.patches.Patch(color='gray', alpha=1, label=str(year2))]
+
+            legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left', bbox_to_anchor=(1, 1))
+            legend_energy_height_per_item = 0.05  # this is an estimated height per item
+            total_height = legend_energy_height_per_item * len(energy_patches)
+            year_legend_y_position = 1 - total_height - 0.1  # little gap
+            plt.gca().add_artist(legend_energy)
+            ax.legend(handles=year_patches, fontsize=MEDIUM_SIZE, loc='upper left',
+                      bbox_to_anchor=(1, year_legend_y_position))
+        except:
+            print('Input is a series')
 
         # if log:
         #     ax.set_xscale('log')
@@ -177,6 +228,15 @@ class Inventory:
     def pie(self, data):
         sns.set_theme()
         sns.set_style()
+        SMALL_SIZE = 10
+        MEDIUM_SIZE = 12
+
+        plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+        plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
+        plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+        plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
         color_palette = sns.color_palette()
 
         self.colors = {
@@ -213,7 +273,7 @@ class Inventory:
         data.plot.pie(
             autopct=comma_decimal_percent, startangle=90,
             colors=[self.colors[energent] for energent in data.index],
-            ax=ax
+            ax=ax,
         )
         ax.set_ylabel('')
         ax.yaxis.set_major_formatter(plt.FuncFormatter(comma_decimal))
@@ -520,13 +580,26 @@ if __name__ == "__main__":
     base_inventory_2019 = Inventory(constants, 2019)
     inventory_2019 = base_inventory_2019.base_inventory(output_dir, heat_2019, ele_2019, trans_2019, light_2019)
 
+    # 2011 vs 2019
     output_dir = root_dir / 'output/2011v2019/'
-
-    for key in inventory_2019.keys():
+    co2_keys = [key for key in inventory_2019.keys() if key.endswith('co2')]
+    mwh_keys = [key for key in inventory_2019.keys() if not key.endswith('co2')]
+    for key in co2_keys:
         comparison_fig = base_inventory_2019.compare_stacked_bar(
             inventory_2011[key],
             inventory_2019[key],
             '2011',
-            '2019'
+            '2019',
+            'Emisije CO2 (t)',
+        )
+        comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
+
+    for key in mwh_keys:
+        comparison_fig = base_inventory_2019.compare_stacked_bar(
+            inventory_2011[key],
+            inventory_2019[key],
+            '2011',
+            '2019',
+            'Potrošnja energije (MWh)',
         )
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
