@@ -206,6 +206,7 @@ class Inventory:
         ax.set_xlabel(title, fontsize=MEDIUM_SIZE)
         ax.set_ylabel("")
 
+        year_legend_y_position = 1
         try:
             unique_labels = {}
             for energent in data1.columns:
@@ -216,18 +217,19 @@ class Inventory:
             energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
                               unique_labels.items()]
 
-            year_patches = [matplotlib.patches.Patch(color='blue', alpha=0.4, label=str(year1)),
-                            matplotlib.patches.Patch(color='blue', alpha=1, label=str(year2))]
-
             legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left', bbox_to_anchor=(1, 1))
             legend_energy_height_per_item = 0.05  # this is an estimated height per item
             total_height = legend_energy_height_per_item * len(energy_patches)
             year_legend_y_position = 1 - total_height - 0.1  # little gap
             plt.gca().add_artist(legend_energy)
-            ax.legend(handles=year_patches, fontsize=MEDIUM_SIZE, loc='upper left',
-                      bbox_to_anchor=(1, year_legend_y_position))
         except:
             print('Input is a series')
+
+        year_patches = [matplotlib.patches.Patch(color=color_palette[0], alpha=0.4, label=str(year1)),
+                        matplotlib.patches.Patch(color=color_palette[0], alpha=1, label=str(year2))]
+
+        ax.legend(handles=year_patches, fontsize=MEDIUM_SIZE, loc='upper left',
+                  bbox_to_anchor=(1, year_legend_y_position))
 
         # if log:
         #     ax.set_xscale('log')
