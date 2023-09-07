@@ -6,13 +6,18 @@ import pandas as pd
 
 @dataclass
 class Constants:
+
+    # population
     population_2011 = 32029
     population_2021 = 28247
+
+    # fuel ton to mwh
     diesel_ton_mwh = 11.9
     petrol_ton_mwh = 12.3
     lpg_ton_mwh = 13.1
     gas_ton_mwh = 13.3
 
+    # fuel emissions
     co2_diesel_mwh_ton = 0.267
     co2_petrol_mwh_ton = 0.249
     co2_lpg_mwh_ton = 0.227
@@ -23,6 +28,7 @@ class Constants:
     co2_electricity_mwh_ton_2011: float
     co2_electricity_mwh_ton_2019: float
 
+    # heatoil data
     density_heatoil = 840  # kg/m3
     upper_heat_value_heatoil = 12.611  # kwh/kg
     upper_heat_value_natgas = 12.75  # kwh/m3
@@ -33,25 +39,33 @@ class Constants:
     hh_heat_wood_share = 0.2783
     hh_heat_electricity_share = 0.1056
 
+    # commercial fuel share
     commercial_heat_natgas_share = 0.6609
     commercial_heat_heatoil_share = 0.0683
     commercial_heat_wood_share = 0.2460
     commercial_heat_electricity_share = 0.0248
 
+    # transport travelled
+    car_km_per_year = 12650
+    petrol_km_per_year = 9200
+    diesel_km_per_year = 15500
+    heavy_km_per_year = 31000
+    bikes_km_per_year = 3000
+
+    # engine efficiency
     specific_consumption_diesel_2005 = 0.0663  # l/km
     specific_consumption_petrol_2005 = 0.0781  # l/km
-
     specific_consumption_diesel_2000 = 0.0691  # l/km
     specific_consumption_petrol_2000 = 0.0813  # l/km
     specific_consumption_total_2000 = 0.078075  # l/km
-
     specific_consumption_hybrid = 0.042  # l/km
 
+    # density fuel
     petrol_litre_to_ton = 0.000737  # t/l
     diesel_litre_to_ton = 0.000885  # t/l
     lpg_litre_to_ton = 0.00054  # t/l
 
-    lpg_petrol_index = 1.15
+    lpg_petrol_index = 1.16
 
     def __init__(self):
         current_script_path = Path(__file__)

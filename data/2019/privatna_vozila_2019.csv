@@ -1,5 +1,5 @@
 vrsta_prijevoza,broj,benzin,benzin-lpg,dizel,električni,hibridni,hibridni s vanjskim punjenjem,prosjek_km_po_vozilu,procijenjena_potrošena_masa_benzina(t),procijenjena_potrošena_masa_dizela(t),procijenjena_potrošena_masa_unp(t)
-mopedi i motocikli,1091,1089,,,2,,,12542,786.1640818086,0,0
-osobna vozila,18859,6935,910,10986,1,27,2,12542,5024.2442965748,8084.686617306,553.542311322
-teretna i radna vozila,5072,47,15,5009,1,,,12542,33.9299465978,3686.163778089,9.124323813
+mopedi i motocikli,1091,1089,,,2,,,3000,195.7524327,0,0
+osobna vozila,18859,6935,910,10986,1,27,2,12856.3020308606,4077.212316122,9991.4401665,409.57364448
+teretna i radna vozila,5072,47,15,5009,1,,,31000,106.34730172,9111.0729645,22.7486556
 autobusni,4,,,4,,,,61408,0,14.412580416,0

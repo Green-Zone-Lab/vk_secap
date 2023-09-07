@@ -447,7 +447,7 @@ class Inventory:
 
         trans_co2_gorivo = trans_co2_melted.sum()
         trans_co2_gorivo_fig = self.pie(trans_co2_gorivo)
-        trans_co2_gorivo_fig.savefig(output_dir / 'transport_co2_vrsta.png', dpi=300, bbox_inches='tight')
+        trans_co2_gorivo_fig.savefig(output_dir / 'transport_co2_gorivo.png', dpi=300, bbox_inches='tight')
 
         """total emissions"""
         ele['energent'] = 'električna energija'
