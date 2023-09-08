@@ -11,7 +11,9 @@ class Constants:
     population_2011 = 32029
     population_2021 = 28247
 
-    # fuel ton to mwh
+    # fuel ton to mwh IPCC 2006
+    # Guidebook 'How to develop a Sustainable Energy and Climate Action Plan (SECAP)'
+    # Net calorific value
     diesel_ton_mwh = 11.9
     petrol_ton_mwh = 12.3
     lpg_ton_mwh = 13.1
@@ -49,6 +51,7 @@ class Constants:
     car_km_per_year = 12650
     petrol_km_per_year = 9200
     diesel_km_per_year = 15500
+    unp_km_per_year = 16000
     heavy_km_per_year = 31000
     bikes_km_per_year = 3000
 

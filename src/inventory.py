@@ -541,11 +541,11 @@ if __name__ == "__main__":
 
     # calculate tons of fuel
     diesel_spent = prop_diesel * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
+        'broj'] * constants.diesel_km_per_year * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
     petrol_spent = prop_petrol * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+        'broj'] * constants.petrol_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
     lpg_spent = prop_lpg * trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.lpg_petrol_index * constants.lpg_litre_to_ton
+        'broj'] * constants.unp_km_per_year * constants.specific_consumption_petrol_2000 * constants.lpg_petrol_index * constants.lpg_litre_to_ton
 
     # fix values for cars
     trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
@@ -562,16 +562,16 @@ if __name__ == "__main__":
     prop_diesel = diesel_adj / total
 
     diesel_spent = prop_diesel * trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
+        'broj'] * constants.heavy_km_per_year * constants.specific_consumption_diesel_2000 * constants.diesel_litre_to_ton
     petrol_spent = prop_petrol * trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+        'broj'] * constants.heavy_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
 
     trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
     trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_dizela(t)'] = diesel_spent
 
     # fix values for bikes
     petrol_spent = trans.loc[trans['vrsta_prijevoza'] == 'mopedi i motocikli'][
-        'broj'] * km_per_vehicle * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+        'broj'] * constants.bikes_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
     trans.loc[
         trans['vrsta_prijevoza'] == 'mopedi i motocikli', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
 
