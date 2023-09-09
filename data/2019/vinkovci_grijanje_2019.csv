@@ -1,14 +1,14 @@
 nadkategorija,kategorija,broj zgrada,energent,potrošnja_plina_m3/lož_ulja_l,potrošnja_energije(kWh),izvor
 zgrade javne namjene,školstvo,17,prirodni plin,367811,4689590.25,ISGE
 zgrade javne namjene,uprava i uredi gradskih tvrtki,20,prirodni plin,34919,445217.25,ISGE
-zgrade javne namjene,kulturne ustanove,9,prirodni plin,39102,498550.5,ISGE
-zgrade javne namjene,kulturne ustanove,9,lož ulje,3832,40593.29568,ISGE
+zgrade javne namjene,kulturne ustanove,8,prirodni plin,39102,498550.5,ISGE
+zgrade javne namjene,kulturne ustanove,,lož ulje,3832,40593.29568,ISGE
 stambeni objekti,stambeni sektor,8197,prirodni plin,,84202179,Plinara istočne Slavonije
-zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1983,prirodni plin,,56945059,Plinara istočne Slavonije
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1310,prirodni plin,,56945059,Plinara istočne Slavonije
 ostalo,ostalo,5,prirodni plin,11536,147084,ISGE
 stambeni objekti,stambeni sektor,552,lož ulje,,5746429.40894737,procjena iz strukture grijanja
 stambeni objekti,stambeni sektor,3949,ogrjevno drvo,,41111344.5889474,procjena iz strukture grijanja
 stambeni objekti,stambeni sektor,1505,električna energija,,15599561.5831579,procjena iz strukture grijanja
-zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1983,lož ulje,,5884925.90361628,procjena iz strukture grijanja
-zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1984,ogrjevno drvo,,21196072.8007263,procjena iz strukture grijanja
-zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,1985,električna energija,,2136839.85958541,procjena iz strukture grijanja
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,135,lož ulje,,5884925.90361628,procjena iz strukture grijanja
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,487,ogrjevno drvo,,21196072.8007263,procjena iz strukture grijanja
+zgrade komercijalnog i uslužnog karaktera,komercijalne i uslužne djelatnosti,49,električna energija,,2136839.85958541,procjena iz strukture grijanja
