@@ -515,7 +515,6 @@ class Inventory:
             'total_co2': total_co2_bar,
         }
 
-
 if __name__ == "__main__":
     constants = Constants()
     # 2011
@@ -624,3 +623,4 @@ if __name__ == "__main__":
             'Potrošnja energije (MWh)',
         )
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
+
