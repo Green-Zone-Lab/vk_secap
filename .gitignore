@@ -3,3 +3,4 @@ data/source/
 output
 data/dataset*
 data/copernicus
+notebooks/*.ipynb_checkpoints
