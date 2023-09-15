@@ -4,26 +4,76 @@ import seaborn as sns
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+from numpy.polynomial import Polynomial
+
 from .Constants import Constants
 
 root_dir = Path(__file__).parents[1]
 
+
 def adjust_label_distance(texts, autotexts):
     for i, text in enumerate(texts):
         if text.get_text() in ["Autobusni"]:
-            text.set_position((1.15*text.get_position()[0], 1.15*text.get_position()[1]))
-            autotexts[i].set_position((1.15*autotexts[i].get_position()[0], 1.15*autotexts[i].get_position()[1]))
+            text.set_position((1.15 * text.get_position()[0], 1.15 * text.get_position()[1]))
+            autotexts[i].set_position((1.15 * autotexts[i].get_position()[0], 1.15 * autotexts[i].get_position()[1]))
+
 
 def comma_decimal(x, _):
     return "{:.2f}".format(x).replace('.', ',')
 
 
 def comma_decimal_percent(pct, allvals):
-    absolute = int(round(pct/100.*np.sum(allvals)))
+    absolute = int(round(pct / 100. * np.sum(allvals)))
     if absolute == 0:
         return ""
     return "{:.1f}%".format(pct, absolute)
 
+
+def percent_difference(df1, df2):
+    percent_diff = ((df2 - df1) / df1) * 100
+    return percent_diff
+
+
+def electricity_emission_factor_2030():
+    sns.set_theme()
+    sns.set_style()
+    SMALL_SIZE = 10
+    MEDIUM_SIZE = 14
+
+    color_palette = sns.color_palette()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+    plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+    plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
+
+    file_path = Path(root_dir / "data" / "public_data/JRC-COM-NEEFE_1990-2020.xlsx")
+    df = pd.read_excel(file_path, sheet_name=1, skiprows=1, engine='openpyxl')
+    emission_factors = df.loc[df['Unnamed: 0'] == 'Croatia'].drop(columns='Unnamed: 0').melt()
+    x = emission_factors['variable'].values.astype(int)
+    y = emission_factors['value'].values.astype(float)
+
+    p = Polynomial.fit(x, y, 3)
+    predicted_2030 = p(2030)
+
+    x_dense = np.linspace(min(x), 2030, 400)
+    y_dense = p(x_dense)
+
+    sns.scatterplot(x=x, y=y, ax=ax, color='blue')
+    ax.plot(x_dense, y_dense, color='red')
+    ax.scatter(2030, predicted_2030, color='green', marker='x', s=100, label='Predviđanje za 2030')
+    ax.annotate(f'{predicted_2030:.3f}', (2030, predicted_2030), textcoords="offset points", xytext=(0, 10),
+                ha='center')
+
+    # Set x and y labels
+    ax.set_xlabel('Godina')
+    ax.set_ylabel('Emisijske faktor kg(CO2)/kWh')
+
+    return predicted_2030, fig
 
 
 class Inventory:
@@ -166,7 +216,6 @@ class Inventory:
 
         }
 
-
         fig, ax = plt.subplots(figsize=(10, 6))
 
         # Merge the two dataframes side by side
@@ -189,7 +238,7 @@ class Inventory:
                                                                              data2.columns]
             handles, _ = ax.get_legend_handles_labels()
             legend = ax.legend(handles[:len(legend_labels)], legend_labels, fontsize=MEDIUM_SIZE, loc='upper left',
-                      bbox_to_anchor=(1, 1))
+                               bbox_to_anchor=(1, 1))
 
         except AttributeError:
             merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.6,
@@ -217,7 +266,8 @@ class Inventory:
             energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
                               unique_labels.items()]
 
-            legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left', bbox_to_anchor=(1, 1))
+            legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left',
+                                      bbox_to_anchor=(1, 1))
             legend_energy_height_per_item = 0.05  # this is an estimated height per item
             total_height = legend_energy_height_per_item * len(energy_patches)
             year_legend_y_position = 1 - total_height - 0.1  # little gap
@@ -233,6 +283,65 @@ class Inventory:
 
         # if log:
         #     ax.set_xscale('log')
+
+        return fig
+
+    def projection_bar(self, data, title):
+        # Styling and fonts settings as provided
+        sns.set_theme()
+        sns.set_style("whitegrid")
+        SMALL_SIZE = 10
+        MEDIUM_SIZE = 14
+        plt.rc('font', size=MEDIUM_SIZE)
+        plt.rc('axes', titlesize=SMALL_SIZE)
+        plt.rc('axes', labelsize=MEDIUM_SIZE)
+        plt.rc('xtick', labelsize=MEDIUM_SIZE)
+        plt.rc('ytick', labelsize=MEDIUM_SIZE)
+        plt.rc('legend', fontsize=MEDIUM_SIZE)
+
+        # Colors
+        color_palette = sns.color_palette()
+        colors = {
+            'javna rasvjeta': color_palette[0],
+            'promet': color_palette[1],
+            'zgradarstvo': color_palette[2],
+        }
+
+        data_pivot = data.pivot(index='Godina', columns='sektor', values=0)
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        bars = data_pivot.plot(kind='bar', stacked=True, ax=ax, width=0.3,
+                               color=[colors[col] for col in data_pivot.columns])
+
+        heights = []
+        for bar in bars.patches:
+            heights.append(bar.get_y() + bar.get_height() / 2)
+
+        # Calculate the total heights of the bars for 2019 and 2030
+        total_height_2019 = data[data['Godina'] == 2019][0].sum()
+        total_height_2030 = data[data['Godina'] == 2030][0].sum()
+
+        # Drawing the horizontal lines
+        ax.axhline(y=total_height_2019, xmin=0.305, xmax=0.86, color='green', linestyle='--')
+        ax.axhline(y=total_height_2030, xmin=0.305, xmax=0.86, color='green', linestyle='--')
+
+        # Calculating the percentage change
+        if total_height_2019 != 0:
+            percent_change = ((total_height_2030 - total_height_2019) / total_height_2019) * 100
+        else:
+            percent_change = 100  # if the 2019 bar's height is 0, then it's a full increase, so consider it 100%
+
+        diff_position = (total_height_2030 + total_height_2019) / 2
+        ax.text(1 / 2, diff_position + abs(total_height_2030 - total_height_2019) / 20, f'{percent_change:.2f}%',
+                horizontalalignment='center', verticalalignment='center', fontsize=14, color='green')
+
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+        ax.set_ylabel(title)
+
+        legend = ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        if legend:  # Check if a legend exists
+            for text in legend.get_texts():
+                text.set_text(text.get_text().capitalize())
 
         return fig
 
@@ -515,6 +624,7 @@ class Inventory:
             'total_co2': total_co2_bar,
         }
 
+
 if __name__ == "__main__":
     constants = Constants()
     # 2011
@@ -525,8 +635,8 @@ if __name__ == "__main__":
     light = ['električna energija', 2922.5, 678.0, 'javna rasvjeta']
 
     # fuel consumption is 2011 is too low, adjust to the same calculation as in 2019
-    km_per_vehicle = 12542 # same km per year per vehicle
-    factor = constants.specific_consumption_petrol_2000 / constants.specific_consumption_diesel_2000 # how much more petrol is spent
+    km_per_vehicle = 12542  # same km per year per vehicle
+    factor = constants.specific_consumption_petrol_2000 / constants.specific_consumption_diesel_2000  # how much more petrol is spent
     # adjust the fuel to get proportions
     petrol_adj = trans.loc[trans['vrsta_prijevoza'] == 'osobna vozila'][
                      'procijenjena_potrošena_masa_benzina(t)'] / factor
@@ -554,7 +664,8 @@ if __name__ == "__main__":
     # fix values for trucks
     petrol_adj = trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
                      'procijenjena_potrošena_masa_benzina(t)'] / factor
-    diesel_adj = trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila']['procijenjena_potrošena_masa_dizela(t)']
+    diesel_adj = trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
+        'procijenjena_potrošena_masa_dizela(t)']
     total = petrol_adj + diesel_adj
 
     prop_petrol = petrol_adj / total
@@ -565,15 +676,16 @@ if __name__ == "__main__":
     petrol_spent = prop_petrol * trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila'][
         'broj'] * constants.heavy_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
 
-    trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
-    trans.loc[trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_dizela(t)'] = diesel_spent
+    trans.loc[
+        trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
+    trans.loc[
+        trans['vrsta_prijevoza'] == 'teretna i radna vozila', 'procijenjena_potrošena_masa_dizela(t)'] = diesel_spent
 
     # fix values for bikes
     petrol_spent = trans.loc[trans['vrsta_prijevoza'] == 'mopedi i motocikli'][
-        'broj'] * constants.bikes_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
+                       'broj'] * constants.bikes_km_per_year * constants.specific_consumption_petrol_2000 * constants.petrol_litre_to_ton
     trans.loc[
         trans['vrsta_prijevoza'] == 'mopedi i motocikli', 'procijenjena_potrošena_masa_benzina(t)'] = petrol_spent
-
 
     # group heat to fit 2019 format
     heat['kategorija'] = heat['kategorija'].replace('objekti i uredi gradskih tvrtki', 'uprava i uredi gradskih tvrtki')
@@ -623,4 +735,67 @@ if __name__ == "__main__":
             'Potrošnja energije (MWh)',
         )
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
+
+    """ create supplementary output dir """
+    supplementary_output = root_dir / 'output_supplementary/'
+
+    """ mitigation measures effect business as usual"""
+    # electricity 2030 emission index
+    ele_2030_index, ele_figure = electricity_emission_factor_2030()
+    ele_figure.savefig(supplementary_output / 'electricity_2030_emission_factor', dpi=300, bbox_inches='tight')
+
+    # business as usual scenario
+    change_per_year = percent_difference(
+        inventory_2011['total'].sum(axis=1),
+        inventory_2019['total'].sum(axis=1)
+    ) / 8
+
+    change_until_2030 = change_per_year * 11 / 100
+    change_inventory_2030 = inventory_2019['total'].sum(axis=1) * change_until_2030
+    inventory_2030 = inventory_2019['total'].sum(axis=1) + change_inventory_2030
+
+    # use 0.025 share of electric cars from Offical strategy (NN 25/2020)
+    n_electric_cars_2030 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.025))
+
+    # approximate as energy consumption per car
+    energy_per_car = inventory_2019['total'].sum(axis=1)['promet'] / trans_2019.sum()['broj']
+    energy_trans_2030 = energy_per_car * n_electric_cars_2030
+    inventory_2030['promet'] = energy_trans_2030
+
+    # co2 change to 2030
+    electricity_co2_2019 = inventory_2019['total_co2']['električna energija'].sum()
+    dif_ele_emission_factor = ele_2030_index / constants.co2_electricity_mwh_ton_2019
+    electricity_co2_2030_saved_light = (1 - dif_ele_emission_factor) * \
+                                       inventory_2019['total_co2'].loc['javna rasvjeta']['električna energija']
+    electricity_co2_2030_saved_buildings = (1 - dif_ele_emission_factor) * \
+                                           inventory_2019['total_co2'].loc['zgradarstvo']['električna energija']
+
+    inventory_2030_co2 = inventory_2019['total_co2'].copy()
+    inventory_2030_co2.loc['javna rasvjeta']['električna energija'] = inventory_2030_co2.loc['javna rasvjeta'][
+                                                                          'električna energija'] - electricity_co2_2030_saved_light
+    inventory_2030_co2.loc['zgradarstvo']['električna energija'] = inventory_2030_co2.loc['zgradarstvo'][
+                                                                       'električna energija'] - electricity_co2_2030_saved_buildings
+    co2_2030_sector_scaling = inventory_2030_co2.sum(axis=1) / inventory_2019['total'].sum(axis=1)
+    inventory_2030_co2 = inventory_2030 * co2_2030_sector_scaling
+
+    # format data for projection chart
+    inventory_2030 = inventory_2030.reset_index()
+    inventory_2019_total = inventory_2019['total'].sum(axis=1).reset_index()
+    inventory_2019_total['Godina'] = 2019
+    inventory_2030['Godina'] = 2030
+    projection_total = pd.concat([inventory_2019_total, inventory_2030])
+    energy_projection_2030 = base_inventory_2019.projection_bar(projection_total, 'Potrošnja energije (MWh)')
+    energy_projection_2030.savefig(
+        supplementary_output / 'energy_2030_projection_as_usual.ong', dpi=300, bbox_inches='tight'
+    )
+
+    inventory_2030_co2 = inventory_2030_co2.reset_index()
+    inventory_2019_total_co2 = inventory_2019['total_co2'].sum(axis=1).reset_index()
+    inventory_2019_total_co2['Godina'] = 2019
+    inventory_2030_co2['Godina'] = 2030
+    projection_total = pd.concat([inventory_2019_total_co2, inventory_2030_co2])
+    co2_projection_2030 = base_inventory_2019.projection_bar(projection_total, 'Emisije CO2 (t)')
+    co2_projection_2030.savefig(
+        supplementary_output / 'co2_2030_projection_as_usual.ong', dpi=300, bbox_inches='tight'
+    )
 
