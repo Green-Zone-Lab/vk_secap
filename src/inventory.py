@@ -6,13 +6,14 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from numpy.polynomial import Polynomial
-
-from .Constants import Constants
+from Constants import Constants
 
 root_dir = Path(__file__).parents[1]
 
+
 def custom_formatter(x, pos):
-    return '{:,.1f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
+    return '{:,.0f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
+
 
 def adjust_label_distance(texts, autotexts):
     for i, text in enumerate(texts):
@@ -29,7 +30,7 @@ def comma_decimal_percent(pct, allvals):
     absolute = int(round(pct / 100. * np.sum(allvals)))
     if absolute == 0:
         return ""
-    return "{:.1f}%".format(pct, absolute)
+    return "{:.1f}%".format(pct, absolute).replace('.', ',')
 
 
 def percent_difference(df1, df2):
@@ -66,20 +67,19 @@ def electricity_emission_factor_2030():
     x_dense = np.linspace(min(x), 2030, 400)
     y_dense = p(x_dense)
 
-    sns.scatterplot(x=x, y=y, ax=ax, color='blue')
-    ax.plot(x_dense, y_dense, color='red')
-    ax.scatter(2030, predicted_2030, color='green', marker='x', s=100, label='Predviđanje za 2030')
-    ax.annotate(f'{predicted_2030:.3f}', (2030, predicted_2030), textcoords="offset points", xytext=(0, 10),
+    sns.scatterplot(x=x, y=y, ax=ax, color=color_palette[0])
+    ax.plot(x_dense, y_dense, color=color_palette[3])
+    ax.scatter(2030, predicted_2030, color=color_palette[2], marker='x', s=100, label='Predviđanje za 2030')
+    ax.annotate(f'{predicted_2030:.3f}'.replace('.', ','), (2030, predicted_2030), textcoords="offset points", xytext=(0, 10),
                 ha='center')
 
     # Set x and y labels
     ax.set_xlabel('Godina')
-    ax.set_ylabel('Emisijske faktor kg(CO2)/kWh')
+    ax.set_ylabel('Emisijski faktor kg(CO2)/kWh')
 
-    ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
+    ax.yaxis.set_major_formatter(FuncFormatter(custom_formatter))
 
     return predicted_2030, fig
-
 
 
 class Inventory:
@@ -181,6 +181,8 @@ class Inventory:
         ax.set_xlabel(title, fontsize=MEDIUM_SIZE)
         ax.set_ylabel("")
 
+        ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
+
         # if log:
         # ax.set_xscale('log')
 
@@ -243,8 +245,6 @@ class Inventory:
             legend_labels = [f"{year1} - {col}" for col in data1.columns] + [f"{year2} - {col}" for col in
                                                                              data2.columns]
             handles, _ = ax.get_legend_handles_labels()
-            legend = ax.legend(handles[:len(legend_labels)], legend_labels, fontsize=MEDIUM_SIZE, loc='upper left',
-                               bbox_to_anchor=(1, 1))
 
         except AttributeError:
             merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.3, position=0, alpha=0.6,
@@ -263,29 +263,29 @@ class Inventory:
 
         year_legend_y_position = 1
         try:
-            unique_labels = {}
-            for energent in data1.columns:
-                unique_labels[energent] = self.colors[energent]
-            for energent in data2.columns:
-                unique_labels[energent] = self.colors[energent]
+            unique_labels = {energent: self.colors[energent] for energent in list(data1.columns) + list(data2.columns)}
 
+            # Patches for the energents
             energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
                               unique_labels.items()]
 
-            legend_energy = ax.legend(handles=energy_patches, fontsize=MEDIUM_SIZE, loc='upper left',
-                                      bbox_to_anchor=(1, 1))
-            legend_energy_height_per_item = 0.05  # this is an estimated height per item
-            total_height = legend_energy_height_per_item * len(energy_patches)
-            year_legend_y_position = 1 - total_height - 0.1  # little gap
-            plt.gca().add_artist(legend_energy)
+            # Patches for the years
+            year_patches = [
+                matplotlib.patches.Patch(color=color_palette[0], alpha=0.4, label=str(year1)),
+                matplotlib.patches.Patch(color=color_palette[0], alpha=1, label=str(year2))
+            ]
+
+            # Combine the patches and set the legend
+            all_patches = energy_patches + year_patches
+            ax.legend(handles=all_patches, fontsize=SMALL_SIZE, loc='best', bbox_to_anchor=(1, 1))
         except:
             print('Input is a series')
+            year_patches = [matplotlib.patches.Patch(color=color_palette[0], alpha=0.4, label=str(year1)),
+                            matplotlib.patches.Patch(color=color_palette[0], alpha=1, label=str(year2))]
 
-        year_patches = [matplotlib.patches.Patch(color=color_palette[0], alpha=0.4, label=str(year1)),
-                        matplotlib.patches.Patch(color=color_palette[0], alpha=1, label=str(year2))]
-
-        ax.legend(handles=year_patches, fontsize=MEDIUM_SIZE, loc='upper left',
-                  bbox_to_anchor=(1, year_legend_y_position))
+            ax.legend(handles=year_patches, fontsize=SMALL_SIZE, loc='upper left',
+                      bbox_to_anchor=(1, year_legend_y_position))
+        ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
 
         # if log:
         #     ax.set_xscale('log')
@@ -348,6 +348,8 @@ class Inventory:
         if legend:  # Check if a legend exists
             for text in legend.get_texts():
                 text.set_text(text.get_text().capitalize())
+
+        ax.yaxis.set_major_formatter(FuncFormatter(custom_formatter))
 
         return fig
 
@@ -743,7 +745,8 @@ if __name__ == "__main__":
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
 
     """ create supplementary output dir """
-    supplementary_output = root_dir / 'output_supplementary/'
+    supplementary_output = root_dir / 'output/supplementary_charts/'
+    supplementary_output.mkdir(exist_ok=True, parents=True)
 
     """ mitigation measures effect business as usual"""
     # electricity 2030 emission index
@@ -792,7 +795,7 @@ if __name__ == "__main__":
     projection_total = pd.concat([inventory_2019_total, inventory_2030])
     energy_projection_2030 = base_inventory_2019.projection_bar(projection_total, 'Potrošnja energije (MWh)')
     energy_projection_2030.savefig(
-        supplementary_output / 'energy_2030_projection_as_usual.ong', dpi=300, bbox_inches='tight'
+        supplementary_output / 'energy_2030_projection_as_usual.png', dpi=300, bbox_inches='tight'
     )
 
     inventory_2030_co2 = inventory_2030_co2.reset_index()
@@ -802,7 +805,7 @@ if __name__ == "__main__":
     projection_total = pd.concat([inventory_2019_total_co2, inventory_2030_co2])
     co2_projection_2030 = base_inventory_2019.projection_bar(projection_total, 'Emisije CO2 (t)')
     co2_projection_2030.savefig(
-        supplementary_output / 'co2_2030_projection_as_usual.ong', dpi=300, bbox_inches='tight'
+        supplementary_output / 'co2_2030_projection_as_usual.png', dpi=300, bbox_inches='tight'
     )
 
     # co2 scenario COM - share of electric cars S1 - "Scenarij ubrzane energetske tranzicije"
@@ -856,5 +859,3 @@ if __name__ == "__main__":
     projection_co2_s2.savefig(
         supplementary_output / 'co2_2030_projection_COM.png', dpi=300, bbox_inches='tight'
     )
-
-
