@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-
+import pandas as pd
 import numpy as np
 
 
 @dataclass
 class SupplementaryData:
     land_structure = {
-        'Građevinska područja naselja': 0.25,
-        'Izgrađene strukture van naselja': 0.1,
-        'Ostale površine': 0.01,
-        'Poljoprivredne površine': 0.33,
-        'Šumske površine': 0.28,
-        'Vodne površine': 0.03
+        'Građevinska područja naselja': 25.0,
+        'Izgrađene strukture van naselja': 10.0,
+        'Ostale površine': 1.0,
+        'Poljoprivredne površine': 33.0,
+        'Šumske površine': 28.0,
+        'Vodne površine': 3.0
     }
 
     land_building_share = {
@@ -21,8 +21,8 @@ class SupplementaryData:
 
     arable_land_structure = {
         'Osobito vrijedno obradivo tlo': 49.7,
-        'Vrijedno obradivo tlo': 477.44,
-        'Ostala obradiva tla': 2.85,
+        'Vrijedno obradivo tlo': 47.744,
+        'Ostala obradiva tla': 2.850,
     }
 
     arable_land_use = {
@@ -30,8 +30,8 @@ class SupplementaryData:
         'Voćnjak': 7.63,
         'Livada': 0.14,
         'Pašnjak': 0.12,
-        'Vinograd': 0.02,
-        'Ostalo': 0.04,
+        'Vinograd': 0.2,
+        'Ostalo': 0.4,
     }
 
     water_shortages = {
@@ -77,7 +77,7 @@ class SupplementaryData:
         '51-55': [9.85, 8.33],
         '56-60': [12.14, 11.36],
         '61-65': [11.75, 11.61],
-        '66-100': [24.27, 25.51],
+        '>66': [24.27, 25.51],
     }
 
     employment_vinkovci = {
@@ -144,34 +144,123 @@ class SupplementaryData:
 
     arrivals_sleepovers = {
         # first cols arrival, second col sleepover
-        2016: [23233, 43761],
-        2017: [27492, 56508],
-        2018: [26605, 53889],
-        2019: [26554, 52332],
-        2020: [11256, 23504],
-        2021: [18741, 45782],
-        2022: [27786, 57839],
+        "2016.": [23233, 43761],
+        "2017.": [27492, 56508],
+        "2018.": [26605, 53889],
+        "2019.": [26554, 52332],
+        "2020.": [11256, 23504],
+        "2021.": [18741, 45782],
+        "2022.": [27786, 57839],
     }
 
     employment_tourism = {
-        2018: 2.25,
-        2019: 2.33,
-        2020: 2.28,
-        2021: 2.36,
-        2022: 2.37,
+        "2018.": 2.25,
+        "2019.": 2.33,
+        "2020.": 2.28,
+        "2021.": 2.36,
+        "2022.": 2.37,
     }
 
     tourists_per_capita = {
         # first col tourists, second col sleepover
-        2018: [1.88, 1.2],
-        2019: [1.89, 1.2],
-        2020: [1.54, 0.9],
-        2021: [1.76, 1.1],
-        2022: [1.93, 1.23],
+        "2018.": [1.88, 1.2],
+        "2019.": [1.89, 1.2],
+        "2020.": [1.54, 0.9],
+        "2021.": [1.76, 1.1],
+        "2022.": [1.93, 1.23],
+    }
+
+    damages_plumbing = {
+        # first col Grad Vinkovci, second col Ostala područja
+        "2016.": [600, 790],
+        "2017.": [838, 812],
+        "2018.": [685, 630],
+        "2019.": [823, 620],
+        "2020.": [913, 867],
+        "2021.": [992, 901],
+        "2022.": [1354, 1074],
+    }
+
+    water_requirements_2021 = {
+        'Siječanj': 120522,
+        'Veljača': 110411,
+        'Ožujak': 111503,
+        'Travanj': 127246,
+        'Svibanj': 120781,
+        'Lipanj': 125041,
+        'Srpanj': 131015,
+        'Kolovoz': 128016,
+        'Rujan': 138839,
+        'Listopad': 126765,
+        'Studeni': 123248,
+        'Prosinac': 109562,
+    }
+
+    water_loss = {
+        "2019.": 60.92,
+        "2020.": 45.6,
+        "2021.": 52.27,
+        "2022.": 61.13,
+    }
+
+    water_capacity = {
+        # cols: Zahvaćena količina vode "Sikirevci", Raspoloživi kapacitet
+        'Siječanj': [299.44, 800],
+        'Veljača': [289.56, 800],
+        'Ožujak': [282.31, 800],
+        'Travanj': [281.99, 800],
+        'Svibanj': [293.12, 800],
+        'Lipanj': [318.6, 800],
+        'Srpanj': [333.53, 800],
+        'Kolovoz': [335.46, 800],
+        'Rujan': [322.97, 800],
+        'Listopad': [329.68, 800],
+        'Studeni': [330.67, 800],
+        'Prosinac': [319.57, 800],
+    }
+
+    water_samples = {
+        # first col Uzorci fiz.-kem., 2nd col Neuskladni uzorci fiz.-kem., Uzorci mirkobio., Neuskladni uzorci mikrobio.
+        "2021.": [1124, 0, 873, 0],
+        "2022.": [1158, 0, 906, 0],
+    }
+
+    use_of_land = {
+        'Zelena površina': 61,
+        'Građevinska područja': 25,
+        'Građevinska područja izvan naselja': 10,
+        'Vodne površine': 3,
+        'Ostale površine': 1,
     }
 
 
-
-
-
-
+class SupplementaryDataConverted:
+    land_structure = pd.DataFrame(list(SupplementaryData.land_structure.items()), columns=['Područje', 'Value'])
+    land_building_share = pd.DataFrame(list(SupplementaryData.land_building_share.items()), columns=['Područje', 'Value'])
+    arable_land_structure = pd.DataFrame(list(SupplementaryData.arable_land_structure.items()),
+                                         columns=['Vrsta građevinskog područja', 'Value'])
+    arable_land_use = pd.DataFrame(list(SupplementaryData.arable_land_use.items()), columns=['Vrsta uporabe', 'Value'])
+    water_shortages = pd.DataFrame.from_dict(SupplementaryData.water_shortages, orient='index',
+                                             columns=['Prosječna godina', 'Sušna godina'])
+    hummus_per_county = pd.DataFrame(list(SupplementaryData.hummus_per_county.items()), columns=['Županija', 'Value'])
+    agri_employment_age = pd.DataFrame.from_dict(SupplementaryData.agri_employment_age, orient='index',
+                                                 columns=['Županija', 'Vinkovci'])
+    employment_vinkovci = pd.DataFrame(list(SupplementaryData.employment_vinkovci.items()),
+                                       columns=['Employment Type', 'Value'])
+    bdp_index_region = pd.DataFrame(list(SupplementaryData.bdp_index_region.items()), columns=['Region', 'Value'])
+    agri_education = pd.DataFrame.from_dict(SupplementaryData.agri_education, orient='index',
+                                            columns=['Županija', 'Vinkovci'])
+    turism_seasonality = pd.DataFrame(SupplementaryData.turism_seasonality).T
+    precipitation = pd.DataFrame(SupplementaryData.precipitation).T
+    arrivals_sleepovers = pd.DataFrame.from_dict(SupplementaryData.arrivals_sleepovers, orient='index',
+                                                 columns=['Dolasci', 'Noćenja'])
+    employment_tourism = pd.DataFrame(list(SupplementaryData.employment_tourism.items()), columns=['Year', 'Value'])
+    tourists_per_capita = pd.DataFrame.from_dict(SupplementaryData.tourists_per_capita, orient='index',
+                                                 columns=['Broj turista', 'Noćenja'])
+    water_requirements = pd.DataFrame(list(SupplementaryData.water_requirements_2021.items()), columns=['Month', 'Value'])
+    damages_plumbing = pd.DataFrame.from_dict(SupplementaryData.damages_plumbing, orient='index',
+                                                 columns=['Grad Vinkovci', 'Ostala područja'])
+    water_loss = pd.DataFrame(list(SupplementaryData.water_loss.items()), columns=['Year', 'Value'])
+    water_capacity = pd.DataFrame(SupplementaryData.water_capacity).T
+    water_samples = pd.DataFrame(SupplementaryData.water_samples).T
+    use_of_land = pd.DataFrame(list(SupplementaryData.use_of_land.items()), columns=['Namjena površine', 'Value'])

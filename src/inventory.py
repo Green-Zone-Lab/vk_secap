@@ -4,12 +4,15 @@ import seaborn as sns
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from numpy.polynomial import Polynomial
 
 from .Constants import Constants
 
 root_dir = Path(__file__).parents[1]
 
+def custom_formatter(x, pos):
+    return '{:,.1f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
 
 def adjust_label_distance(texts, autotexts):
     for i, text in enumerate(texts):
@@ -73,7 +76,10 @@ def electricity_emission_factor_2030():
     ax.set_xlabel('Godina')
     ax.set_ylabel('Emisijske faktor kg(CO2)/kWh')
 
+    ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
+
     return predicted_2030, fig
+
 
 
 class Inventory:
@@ -97,17 +103,17 @@ class Inventory:
             self.co2_factors["električna energija"] = constants.co2_electricity_mwh_ton_2019
 
         self.colors = {
-            'lož ulje': color_palette[1],  # 'orange'
-            'električna energija': color_palette[0],  # 'blue'
-            'prirodni plin': color_palette[3],  # 'red'
-            'ogrjevno drvo': color_palette[5],  # 'green'
+            'lož ulje': color_palette[1],
+            'električna energija': color_palette[0],
+            'prirodni plin': color_palette[3],
+            'ogrjevno drvo': color_palette[5],
             'Dizel': color_palette[8],
             'Benzin': color_palette[9],
             'UNP': color_palette[6],
 
-            'stambeni objekti': color_palette[0],  # 'blue'
-            'zgrade komercijalnog i uslužnog karaktera': color_palette[1],  # 'orange',
-            'zgrade javne namjene': color_palette[2],  # 'green'
+            'stambeni objekti': color_palette[0],
+            'zgrade komercijalnog i uslužnog karaktera': color_palette[1],
+            'zgrade javne namjene': color_palette[2],
 
             'teretna i radna vozila': color_palette[6],
             'osobna vozila': color_palette[7],
@@ -798,4 +804,14 @@ if __name__ == "__main__":
     co2_projection_2030.savefig(
         supplementary_output / 'co2_2030_projection_as_usual.ong', dpi=300, bbox_inches='tight'
     )
+
+    # co2 scenario COM - share of electric cars S1 - "Scenarij ubrzane energetske tranzicije"
+    n_electric_cars_2030_s2 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.045))
+
+    # approximate as energy consumption per car
+    energy_per_car_s2 = inventory_2019['total'].sum(axis=1)['promet'] / trans_2019.sum()['broj']
+    energy_trans_2030_s2 = energy_per_car_s2 * n_electric_cars_2030_s2
+
+    inventory_2030
+
 
