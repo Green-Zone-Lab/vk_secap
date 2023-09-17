@@ -806,12 +806,55 @@ if __name__ == "__main__":
     )
 
     # co2 scenario COM - share of electric cars S1 - "Scenarij ubrzane energetske tranzicije"
-    n_electric_cars_2030_s2 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.045))
+    # savings of 7.5% total energy and CO2 for eco-driving
+    # savings of 5% total energy and CO2 for bikes
+    eco_driving = inventory_2019['total'].sum(axis=1)['promet'] * 0.075
+    bike_mobility = inventory_2019['total'].sum(axis=1)['promet'] * 0.05
 
-    # approximate as energy consumption per car
+    eco_driving_co2 = inventory_2019['total_co2'].sum(axis=1)['promet'] * 0.075
+    bike_mobility_co2 = inventory_2019['total_co2'].sum(axis=1)['promet'] * 0.05
+
+    n_electric_cars_2030_s2 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.045))
     energy_per_car_s2 = inventory_2019['total'].sum(axis=1)['promet'] / trans_2019.sum()['broj']
     energy_trans_2030_s2 = energy_per_car_s2 * n_electric_cars_2030_s2
 
-    inventory_2030
+    inventory_2030_s2 = inventory_2030.copy()
+    inventory_2030_s2.loc[inventory_2030_s2['sektor'] == 'promet', 0] = energy_trans_2030_s2
+
+    promet_loc = inventory_2030_s2['sektor'] == 'promet'
+    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - eco_driving
+    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - bike_mobility_co2
+    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - 2398.9
+
+    inventory_2030_s2 = inventory_2030.copy()
+    inventory_2030_s2.loc[inventory_2030_s2['sektor'] == 'promet', 0] = energy_trans_2030_s2
+
+    zgradarstvo_loc = inventory_2030_s2['sektor'] == 'zgradarstvo'
+    inventory_2030_s2.loc[zgradarstvo_loc, 0] = inventory_2030_s2.loc[zgradarstvo_loc][0] - 71899.84
+
+    rasvjeta_loc = inventory_2030_s2['sektor'] == 'javna rasvjeta'
+    inventory_2030_s2.loc[rasvjeta_loc, 0] = inventory_2030_s2.loc[rasvjeta_loc][0] - 365.568
+    promet_loc = inventory_2030_s2['sektor'] == 'promet'
+
+    projection_total = pd.concat([inventory_2019_total, inventory_2030_s2])
+    projection_s2 = base_inventory_2019.projection_bar(projection_total, 'Potrošnja energije (MWh)')
+    projection_s2.savefig(
+        supplementary_output / 'energy_2030_projection_COM.png', dpi=300, bbox_inches='tight'
+    )
+
+    # Co2 projection
+    inventory_2030_co2_s2 = inventory_2030_co2.copy()
+    ele_car_savings = inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'promet'][0] * 0.02
+    promet_loc_co2 = inventory_2030_co2_s2['sektor'] == 'promet'
+    inventory_2030_co2_s2.loc[promet_loc_co2, 0] = (inventory_2030_co2_s2.loc[promet_loc_co2][0]
+                                                    - ele_car_savings - eco_driving_co2 - bike_mobility_co2 - 566.21)
+    zgradarstvo_loc_co2 = inventory_2030_co2_s2['sektor'] == 'zgradarstvo'
+    inventory_2030_co2_s2.loc[zgradarstvo_loc_co2, 0] = inventory_2030_co2_s2.loc[zgradarstvo_loc_co2][0] - 14654.86
+
+    projection_total = pd.concat([inventory_2019_total_co2, inventory_2030_co2_s2])
+    projection_co2_s2 = base_inventory_2019.projection_bar(projection_total, 'Emisije CO2 (t)')
+    projection_co2_s2.savefig(
+        supplementary_output / 'co2_2030_projection_COM.png', dpi=300, bbox_inches='tight'
+    )
 
 
