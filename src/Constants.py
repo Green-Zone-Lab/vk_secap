@@ -8,8 +8,8 @@ import pandas as pd
 class Constants:
 
     # population
-    population_2011 = 32029
-    population_2021 = 28247
+    population_2011 = 35312
+    population_2021 = 30842
 
     # fuel ton to mwh IPCC 2006
     # Guidebook 'How to develop a Sustainable Energy and Climate Action Plan (SECAP)'
