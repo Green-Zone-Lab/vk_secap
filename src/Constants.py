@@ -6,7 +6,6 @@ import pandas as pd
 
 @dataclass
 class Constants:
-
     # population
     population_2011 = 35312
     population_2021 = 30842
@@ -29,6 +28,7 @@ class Constants:
 
     co2_electricity_mwh_ton_2011: float
     co2_electricity_mwh_ton_2019: float
+    co2_electricity_mwh_ton_2030 = 0.09  # source - strategija prilagodbe
 
     # heatoil data
     density_heatoil = 840  # kg/m3
@@ -58,6 +58,7 @@ class Constants:
     # engine efficiency
     specific_consumption_diesel_2005 = 0.0663  # l/km
     specific_consumption_petrol_2005 = 0.0781  # l/km
+    specific_consumption_total_2005 = 0.073875  # l/km
     specific_consumption_diesel_2000 = 0.0691  # l/km
     specific_consumption_petrol_2000 = 0.0813  # l/km
     specific_consumption_total_2000 = 0.078075  # l/km

@@ -220,7 +220,7 @@ class SupplementaryData:
     }
 
     water_samples = {
-        # first col Uzorci fiz.-kem., 2nd col Neuskladni uzorci fiz.-kem., Uzorci mirkobio., Neuskladni uzorci mikrobio.
+        # first col Uzorci fiz.-kem., 2nd col Nesukladni uzorci fiz.-kem., Uzorci mirkobio., Nesukladni uzorci mikrobio.
         "2021.": [1124, 0, 873, 0],
         "2022.": [1158, 0, 906, 0],
     }
@@ -233,10 +233,30 @@ class SupplementaryData:
         'Ostale površine': 1,
     }
 
+    engine_efficiency_trends = {
+        2000: 0.078075,
+        2001: 0.077082,
+        2002: 0.076451,
+        2003: 0.075565,
+        2004: 0.074704,
+        2005: 0.073875,
+        2006: 0.072778,
+        2007: 0.072008,
+        2008: 0.071159,
+        2009: 0.070547,
+        2010: 0.07009,
+        2011: 0.069446,
+        2012: 0.068715,
+        2013: 0.067921,
+        2014: 0.069346,
+        2015: 0.069016,
+    }
+
 
 class SupplementaryDataConverted:
     land_structure = pd.DataFrame(list(SupplementaryData.land_structure.items()), columns=['Područje', 'Value'])
-    land_building_share = pd.DataFrame(list(SupplementaryData.land_building_share.items()), columns=['Područje', 'Value'])
+    land_building_share = pd.DataFrame(list(SupplementaryData.land_building_share.items()),
+                                       columns=['Područje', 'Value'])
     arable_land_structure = pd.DataFrame(list(SupplementaryData.arable_land_structure.items()),
                                          columns=['Vrsta građevinskog područja', 'Value'])
     arable_land_use = pd.DataFrame(list(SupplementaryData.arable_land_use.items()), columns=['Vrsta uporabe', 'Value'])
@@ -257,9 +277,10 @@ class SupplementaryDataConverted:
     employment_tourism = pd.DataFrame(list(SupplementaryData.employment_tourism.items()), columns=['Year', 'Value'])
     tourists_per_capita = pd.DataFrame.from_dict(SupplementaryData.tourists_per_capita, orient='index',
                                                  columns=['Broj turista', 'Noćenja'])
-    water_requirements = pd.DataFrame(list(SupplementaryData.water_requirements_2021.items()), columns=['Month', 'Value'])
+    water_requirements = pd.DataFrame(list(SupplementaryData.water_requirements_2021.items()),
+                                      columns=['Month', 'Value'])
     damages_plumbing = pd.DataFrame.from_dict(SupplementaryData.damages_plumbing, orient='index',
-                                                 columns=['Grad Vinkovci', 'Ostala područja'])
+                                              columns=['Grad Vinkovci', 'Ostala područja'])
     water_loss = pd.DataFrame(list(SupplementaryData.water_loss.items()), columns=['Year', 'Value'])
     water_capacity = pd.DataFrame(SupplementaryData.water_capacity).T
     water_samples = pd.DataFrame(SupplementaryData.water_samples).T

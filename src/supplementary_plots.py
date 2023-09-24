@@ -11,7 +11,6 @@ def custom_formatter(x, pos):
     return '{:,.1f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
 
 
-
 class PlottingUtility:
     def __init__(self):
         sns.set_theme()
@@ -34,7 +33,8 @@ class PlottingUtility:
             ax.set_yticklabels(labels, fontsize=MEDIUM_SIZE)
 
         else:
-            labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label in
+            labels = [label.get_text().capitalize() if isinstance(label.get_text(), str) else label.get_text() for label
+                      in
                       ax.get_yticklabels()]
             ax.set_yticklabels(labels, fontsize=MEDIUM_SIZE)
 
@@ -91,7 +91,8 @@ class PlottingUtility:
             if index == 0:
                 ax.barh(data.index, data[column], label='Raspoloživi kapacitet', color=self.colors[0], alpha=0.5)
             if index == 1:
-                ax.barh(data.index, data[column], label="Zahvaćeni kapacitet 'Sikirevci'", color=self.colors[0], alpha=1)
+                ax.barh(data.index, data[column], label="Zahvaćeni kapacitet 'Sikirevci'", color=self.colors[0],
+                        alpha=1)
 
         legend = ax.legend(fontsize=14, loc='upper left', bbox_to_anchor=(1, 1))
         plt.setp(legend.get_title(), fontsize='small')
@@ -201,13 +202,13 @@ def main(output_folder):
     )
 
     plot_util.plot_simple_bar(
-        data.employment_tourism.set_index('Year'), "", "Udio zaposlenih u turizmu (%)",
+        data.employment_tourism.set_index('Year'), "", "Indeks udjela zaposlenih u turizmu",
         "Udio zaposlenih u turizmu", False, output_folder
     )
 
     plot_util.plot_stacked_bar(
-        data.tourists_per_capita, "", "Broj po glavi stanovnika",
-        "Broj turista i noćenja per capita", output_folder, False
+        data.tourists_per_capita, "", "Indeks, broj po glavi stanovnika",
+        "Indeks broja turista i noćenja per capita", output_folder, False
     )
 
     plot_util.plot_simple_bar(
@@ -232,9 +233,9 @@ def main(output_folder):
 
     data.water_samples.columns = [
         'Uzorci fiz.-kem.',
-        'Neuskladni uzorci fiz.-kem.',
+        'Nesukladni uzorci fiz.-kem.',
         'Uzorci mikrobiološki',
-        'Neuskladni uzorci mikrobiološki'
+        'Nesukladni uzorci mikrobiološki'
     ]
     plot_util.plot_stacked_bar(
         data.water_samples, "", "Broj uzoraka", "Analize uzoraka vode", output_folder, False

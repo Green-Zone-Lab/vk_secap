@@ -7,12 +7,17 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from numpy.polynomial import Polynomial
 from Constants import Constants
+from SupplementaryData import SupplementaryData
+from sklearn.metrics import r2_score
 
 root_dir = Path(__file__).parents[1]
 
 
 def custom_formatter(x, pos):
     return '{:,.0f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
+
+def custom_formatter_engine(x, pos):
+    return '{:,.4f}'.format(x).replace(',', ' ').replace('.', ',').replace(' ', '.')
 
 
 def adjust_label_distance(texts, autotexts):
@@ -67,17 +72,73 @@ def electricity_emission_factor_2030():
     x_dense = np.linspace(min(x), 2030, 400)
     y_dense = p(x_dense)
 
+    y_pred = p(x)
+    r2 = r2_score(y_pred, y)
+
     sns.scatterplot(x=x, y=y, ax=ax, color=color_palette[0])
     ax.plot(x_dense, y_dense, color=color_palette[3])
     ax.scatter(2030, predicted_2030, color=color_palette[2], marker='x', s=100, label='Predviđanje za 2030')
-    ax.annotate(f'{predicted_2030:.3f}'.replace('.', ','), (2030, predicted_2030), textcoords="offset points", xytext=(0, 10),
+    ax.annotate(f'{predicted_2030:.3f}'.replace('.', ','), (2030, predicted_2030), textcoords="offset points",
+                xytext=(0, 10),
                 ha='center')
+    ax.annotate(f'R^2 = {r2:.3f}'.replace('.',','), xy=(0.75, 0.90), xycoords='axes fraction',
+                fontsize=MEDIUM_SIZE)
 
     # Set x and y labels
     ax.set_xlabel('Godina')
     ax.set_ylabel('Emisijski faktor kg(CO2)/kWh')
 
     ax.yaxis.set_major_formatter(FuncFormatter(custom_formatter))
+
+    return predicted_2030, fig
+
+
+def engine_efficiency_projection():
+    sns.set_theme()
+    sns.set_style()
+    SMALL_SIZE = 10
+    MEDIUM_SIZE = 14
+
+    color_palette = sns.color_palette()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+    plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+    plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
+
+    data = SupplementaryData.engine_efficiency_trends
+
+    x = np.array(list(data.keys())).astype(int)
+    y = np.array(list(data.values())).astype(float)
+
+    # drop last two elements due to increase, plateau is modified through polynomial func
+    p = Polynomial.fit(x[:-2], y[:-2], 2)
+    predicted_2030 = p(2030)
+
+    x_dense = np.linspace(min(x), 2030, 400)
+    y_dense = p(x_dense)
+
+    y_pred = p(x)
+    r2 = r2_score(y_pred, y)
+
+    sns.scatterplot(x=x, y=y, ax=ax, color=color_palette[0])
+    ax.plot(x_dense, y_dense, color=color_palette[3])
+    ax.scatter(2030, predicted_2030, color=color_palette[2], marker='x', s=100, label='Predviđanje za 2030')
+    ax.annotate(f'{predicted_2030:.3f}'.replace('.', ','), (2030, predicted_2030), textcoords="offset points",
+                xytext=(0, 10),
+                ha='center')
+    ax.annotate(f'R^2 = {r2:.3f}'.replace('.', ','), xy=(0.75, 0.90), xycoords='axes fraction',
+                fontsize=MEDIUM_SIZE)
+
+    # Set x and y labels
+    ax.set_xlabel('Godina')
+    ax.set_ylabel('Specifična potrošnja (l/km)')
+
+    ax.yaxis.set_major_formatter(FuncFormatter(custom_formatter_engine))
 
     return predicted_2030, fig
 
@@ -328,8 +389,8 @@ class Inventory:
         total_height_2030 = data[data['Godina'] == 2030][0].sum()
 
         # Drawing the horizontal lines
-        ax.axhline(y=total_height_2019, xmin=0.305, xmax=0.86, color='green', linestyle='--')
-        ax.axhline(y=total_height_2030, xmin=0.305, xmax=0.86, color='green', linestyle='--')
+        ax.axhline(y=total_height_2019, xmin=0.305, xmax=0.86, color=color_palette[4], linestyle='--')
+        ax.axhline(y=total_height_2030, xmin=0.305, xmax=0.86, color=color_palette[4], linestyle='--')
 
         # Calculating the percentage change
         if total_height_2019 != 0:
@@ -339,7 +400,7 @@ class Inventory:
 
         diff_position = (total_height_2030 + total_height_2019) / 2
         ax.text(1 / 2, diff_position + abs(total_height_2030 - total_height_2019) / 20, f'{percent_change:.2f}%',
-                horizontalalignment='center', verticalalignment='center', fontsize=14, color='green')
+                horizontalalignment='center', verticalalignment='center', fontsize=14, color=color_palette[4])
 
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         ax.set_ylabel(title)
@@ -745,13 +806,19 @@ if __name__ == "__main__":
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
 
     """ create supplementary output dir """
-    supplementary_output = root_dir / 'output/supplementary_charts/'
+    supplementary_output = root_dir / 'output/supplementary_plots/'
     supplementary_output.mkdir(exist_ok=True, parents=True)
 
     """ mitigation measures effect business as usual"""
     # electricity 2030 emission index
-    ele_2030_index, ele_figure = electricity_emission_factor_2030()
-    ele_figure.savefig(supplementary_output / 'electricity_2030_emission_factor', dpi=300, bbox_inches='tight')
+    # from strategija prilagodbe
+    ele_2030_index = constants.co2_electricity_mwh_ton_2030
+    #ele_2030_index, ele_figure = electricity_emission_factor_2030()
+    #ele_figure.savefig(supplementary_output / 'electricity_2030_emission_factor.png', dpi=300, bbox_inches='tight')
+
+    # calculate increase in energy efficiency
+    engine_efficiency_2030, engine_figure = engine_efficiency_projection()
+    engine_figure.savefig(supplementary_output / 'engine_efficiency_2030.png', dpi=300, bbox_inches='tight')
 
     # business as usual scenario
     change_per_year = percent_difference(
@@ -769,7 +836,11 @@ if __name__ == "__main__":
     # approximate as energy consumption per car
     energy_per_car = inventory_2019['total'].sum(axis=1)['promet'] / trans_2019.sum()['broj']
     energy_trans_2030 = energy_per_car * n_electric_cars_2030
+    # add savings from increased engine efficiency
+    engine_efficiency_factor = engine_efficiency_2030 / constants.specific_consumption_total_2005
+    energy_trans_2030 = energy_trans_2030 * engine_efficiency_factor
     inventory_2030['promet'] = energy_trans_2030
+
 
     # co2 change to 2030
     electricity_co2_2019 = inventory_2019['total_co2']['električna energija'].sum()
@@ -808,54 +879,54 @@ if __name__ == "__main__":
         supplementary_output / 'co2_2030_projection_as_usual.png', dpi=300, bbox_inches='tight'
     )
 
+    """scenario 2 COM"""
     # co2 scenario COM - share of electric cars S1 - "Scenarij ubrzane energetske tranzicije"
-    # savings of 7.5% total energy and CO2 for eco-driving
-    # savings of 5% total energy and CO2 for bikes
-    eco_driving = inventory_2019['total'].sum(axis=1)['promet'] * 0.075
-    bike_mobility = inventory_2019['total'].sum(axis=1)['promet'] * 0.05
+    # savings of 10% total energy and CO2 for eco-driving
+    # savings of 10% total energy and CO2 for bikes
+    # savings of 5% total energy for electromobility
+    # 15% of electric cars
+    eco_driving = inventory_2019['total'].sum(axis=1)['promet'] * 0.1
+    bike_mobility = inventory_2019['total'].sum(axis=1)['promet'] * 0.1
+    electromobility = inventory_2019['total'].sum(axis=1)['promet'] * 0.075
+    city_vehicles_savings = 23.47
 
-    eco_driving_co2 = inventory_2019['total_co2'].sum(axis=1)['promet'] * 0.075
-    bike_mobility_co2 = inventory_2019['total_co2'].sum(axis=1)['promet'] * 0.05
-
-    n_electric_cars_2030_s2 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.045))
     energy_per_car_s2 = inventory_2019['total'].sum(axis=1)['promet'] / trans_2019.sum()['broj']
-    energy_trans_2030_s2 = energy_per_car_s2 * n_electric_cars_2030_s2
 
+    eco_driving_co2 = eco_driving * co2_2030_sector_scaling['promet']
+    bike_mobility_co2 = bike_mobility * co2_2030_sector_scaling['promet']
+    electromobility_co2 = electromobility * co2_2030_sector_scaling['promet']
+    cars_2030_s2_co2 = (trans_2019.sum()['broj'] * 0.15) * energy_per_car_s2 * co2_2030_sector_scaling['promet']
+
+    n_electric_cars_2030_s2 = int(trans_2019.sum()['broj'] - (trans_2019.sum()['broj'] * 0.15))
+    energy_trans_2030_s2 = (
+                                       energy_per_car_s2 * n_electric_cars_2030_s2 * engine_efficiency_factor) - electromobility - city_vehicles_savings - eco_driving - bike_mobility
     inventory_2030_s2 = inventory_2030.copy()
-    inventory_2030_s2.loc[inventory_2030_s2['sektor'] == 'promet', 0] = energy_trans_2030_s2
-
     promet_loc = inventory_2030_s2['sektor'] == 'promet'
-    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - eco_driving
-    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - bike_mobility_co2
-    inventory_2030_s2.loc[promet_loc, 0] = inventory_2030_s2.loc[promet_loc][0] - 2398.9
-
-    inventory_2030_s2 = inventory_2030.copy()
-    inventory_2030_s2.loc[inventory_2030_s2['sektor'] == 'promet', 0] = energy_trans_2030_s2
+    inventory_2030_s2.loc[promet_loc, 0] = energy_trans_2030_s2
 
     zgradarstvo_loc = inventory_2030_s2['sektor'] == 'zgradarstvo'
-    inventory_2030_s2.loc[zgradarstvo_loc, 0] = inventory_2030_s2.loc[zgradarstvo_loc][0] - 71899.84
+    inventory_2030_s2.loc[zgradarstvo_loc, 0] = inventory_2030_s2.loc[zgradarstvo_loc][0] - 107595.73
 
     rasvjeta_loc = inventory_2030_s2['sektor'] == 'javna rasvjeta'
     inventory_2030_s2.loc[rasvjeta_loc, 0] = inventory_2030_s2.loc[rasvjeta_loc][0] - 365.568
-    promet_loc = inventory_2030_s2['sektor'] == 'promet'
 
     projection_total = pd.concat([inventory_2019_total, inventory_2030_s2])
-    projection_s2 = base_inventory_2019.projection_bar(projection_total, 'Potrošnja energije (MWh)')
-    projection_s2.savefig(
-        supplementary_output / 'energy_2030_projection_COM.png', dpi=300, bbox_inches='tight'
+    com_projection_bar = base_inventory_2019.projection_bar(projection_total, 'Potrošnja energije (MWh)')
+    com_projection_bar.savefig(
+        supplementary_output / 'energy_2030_projection_COM_expedited.png', dpi=300, bbox_inches='tight'
     )
 
-    # Co2 projection
-    inventory_2030_co2_s2 = inventory_2030_co2.copy()
-    ele_car_savings = inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'promet'][0] * 0.02
-    promet_loc_co2 = inventory_2030_co2_s2['sektor'] == 'promet'
-    inventory_2030_co2_s2.loc[promet_loc_co2, 0] = (inventory_2030_co2_s2.loc[promet_loc_co2][0]
-                                                    - ele_car_savings - eco_driving_co2 - bike_mobility_co2 - 566.21)
-    zgradarstvo_loc_co2 = inventory_2030_co2_s2['sektor'] == 'zgradarstvo'
-    inventory_2030_co2_s2.loc[zgradarstvo_loc_co2, 0] = inventory_2030_co2_s2.loc[zgradarstvo_loc_co2][0] - 14654.86
-
+    inventory_2030_co2_s2 = inventory_2030_co2.copy() # start from 2030 first scenario and add additional measures
+    inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'promet', 0] = \
+    inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'promet'][0] - 18865.09
+    inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'zgradarstvo', 0][0] = \
+    inventory_2030_co2_s2.loc[inventory_2030_co2_s2['sektor'] == 'zgradarstvo'][0] - 22293, 78
+    inventory_2030_co2_s2 = pd.Series(inventory_2030_s2[0].values,
+                                      inventory_2030_s2['sektor']) * co2_2030_sector_scaling.values
+    inventory_2030_co2_s2 = inventory_2030_co2_s2.reset_index()
+    inventory_2030_co2_s2['Godina'] = 2030
     projection_total = pd.concat([inventory_2019_total_co2, inventory_2030_co2_s2])
-    projection_co2_s2 = base_inventory_2019.projection_bar(projection_total, 'Emisije CO2 (t)')
-    projection_co2_s2.savefig(
-        supplementary_output / 'co2_2030_projection_COM.png', dpi=300, bbox_inches='tight'
+    emission_com_bar = base_inventory_2019.projection_bar(projection_total, 'Emisije CO2 (t)')
+    emission_com_bar.savefig(
+        supplementary_output / 'emission_2030_projection_COM_expedited.png', dpi=300, bbox_inches='tight'
     )
