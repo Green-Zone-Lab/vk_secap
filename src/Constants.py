@@ -28,7 +28,7 @@ class Constants:
 
     co2_electricity_mwh_ton_2011: float
     co2_electricity_mwh_ton_2019: float
-    co2_electricity_mwh_ton_2030 = 0.09  # source - strategija prilagodbe
+    co2_electricity_mwh_ton_2030 = 0.09  # source - strategija energetskog razvoja, Hrvoje Požar whitebook, 37.5% smanjenje
 
     # heatoil data
     density_heatoil = 840  # kg/m3
