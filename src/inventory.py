@@ -346,6 +346,7 @@ class Inventory:
 
             ax.legend(handles=year_patches, fontsize=SMALL_SIZE, loc='upper left',
                       bbox_to_anchor=(1, year_legend_y_position))
+
         ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
 
         # if log:
