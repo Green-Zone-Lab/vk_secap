@@ -699,6 +699,8 @@ if __name__ == "__main__":
     constants = Constants()
     # 2011
     output_dir = root_dir / 'output/2011/'
+    output_dir.mkdir(exist_ok=True, parents=True)
+
     heat = pd.read_csv(root_dir / 'data/2011/vinkovci_grijanje_2011.csv')
     ele = pd.read_csv(root_dir / 'data/2011/vinkovci_struja_2011.csv')
     trans = pd.read_csv(root_dir / 'data/2011/privatna_vozila_2011.csv')
@@ -772,6 +774,8 @@ if __name__ == "__main__":
 
     # 2019
     output_dir = root_dir / 'output/2019/'
+    output_dir.mkdir(exist_ok=True, parents=True)
+
     heat_2019 = pd.read_csv(root_dir / 'data/2019/vinkovci_grijanje_2019.csv')
     ele_2019 = pd.read_csv(root_dir / 'data/2019/vinkovci_struja_2019.csv')
     trans_2019 = pd.read_csv(root_dir / 'data/2019/privatna_vozila_2019.csv')
@@ -784,6 +788,8 @@ if __name__ == "__main__":
 
     # 2011 vs 2019
     output_dir = root_dir / 'output/2011v2019/'
+    output_dir.mkdir(exist_ok=True, parents=True)
+
     co2_keys = [key for key in inventory_2019.keys() if key.endswith('co2')]
     mwh_keys = [key for key in inventory_2019.keys() if not key.endswith('co2')]
     for key in co2_keys:
