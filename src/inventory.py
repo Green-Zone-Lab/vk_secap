@@ -354,6 +354,58 @@ class Inventory:
 
         return fig
 
+    def rasvjeta_bar(self, data1, data2, year1, year2, title):
+        sns.set_theme()
+        sns.set_style()
+        SMALL_SIZE = 10
+        MEDIUM_SIZE = 14
+
+        color_palette = sns.color_palette()
+
+        plt.rc('font', size=MEDIUM_SIZE)  # controls default text sizes
+        plt.rc('axes', titlesize=MEDIUM_SIZE)  # fontsize of the axes title
+        plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+        plt.rc('xtick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('ytick', labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
+        plt.rc('legend', fontsize=MEDIUM_SIZE)  # legend fontsize
+
+        self.colors = {
+            'električna energija': color_palette[0],  # 'blue'
+        }
+
+        unique_labels = {energent: self.colors[energent] for energent in list(data1.columns) + list(data2.columns)}
+
+        # Patches for the energents
+        energy_patches = [matplotlib.patches.Patch(color=color, label=label.capitalize()) for label, color in
+                          unique_labels.items()]
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        ax.legend(handles=energy_patches, fontsize=SMALL_SIZE, loc='best', bbox_to_anchor=(1, 1))
+
+        # Merge the two dataframes side by side
+        merged_data = pd.concat([data1, data2], axis=1, keys=['Year1', 'Year2'])
+        merged_data = merged_data.sort_index(ascending=False)
+
+        # Get the colors for each energent
+        legend = None
+
+        merged_data['Year1'].plot(kind='barh', stacked=False, ax=ax, width=0.5, position=0.5, alpha=0.6,
+                                  label=f"{year1}", legend=None)
+        merged_data['Year2'].plot(kind='barh', stacked=False, ax=ax, width=0.5, position=0.5, alpha=1,
+                                  label=f"{year2}", legend=None)
+
+        ax.grid(axis='x', linestyle='--', alpha=0.7)
+
+
+        ax.set_xlabel(title, fontsize=MEDIUM_SIZE)
+        ax.legend().set_visible(False)
+        ax.set_ylabel("")
+
+        ax.xaxis.set_major_formatter(FuncFormatter(custom_formatter))
+
+        return fig
+
     def projection_bar(self, data, title):
         # Styling and fonts settings as provided
         sns.set_theme()
@@ -811,6 +863,48 @@ if __name__ == "__main__":
             'Potrošnja energije (MWh)',
         )
         comparison_fig.savefig(output_dir / '{}_comparison.png'.format(key), dpi=300, bbox_inches='tight')
+
+    # compare javna rasvjeta across 2011 and 2019
+    rasvjeta_2011 = inventory_2011['total'].drop(['promet', 'zgradarstvo']).drop(
+        columns=['Dizel', 'UNP', 'Benzin', 'lož ulje', 'ogrjevno drvo', 'prirodni plin'])
+    rasvjeta_2019 = inventory_2019['total'].drop(['promet', 'zgradarstvo']).drop(
+        columns=['Dizel', 'UNP', 'Benzin', 'lož ulje', 'ogrjevno drvo', 'prirodni plin'])
+
+    rasvjeta_2019['godina'] = 2019
+    rasvjeta_2011['godina'] = 2011
+
+    rasvjeta_2019 = rasvjeta_2019.set_index('godina')
+    rasvjeta_2011 = rasvjeta_2011.set_index('godina')
+
+    comparison_fig_rasvjeta = base_inventory_2019.rasvjeta_bar(
+        rasvjeta_2011,
+        rasvjeta_2019,
+        2011,
+        2019,
+        title='Potrošnja energije (MWh)',
+    )
+    comparison_fig_rasvjeta.savefig(output_dir / 'rasvjeta_comparison.png', dpi=300, bbox_inches='tight')
+
+    # javna rasvjeta co2 emissions
+    rasvjeta_2011_co2 = inventory_2011['total_co2'].drop(['promet', 'zgradarstvo']).drop(
+        columns=['Dizel', 'UNP', 'Benzin', 'lož ulje', 'prirodni plin'])
+    rasvjeta_2019_co2 = inventory_2019['total_co2'].drop(['promet', 'zgradarstvo']).drop(
+        columns=['Dizel', 'UNP', 'Benzin', 'lož ulje', 'prirodni plin'])
+
+    rasvjeta_2019_co2['godina'] = 2019
+    rasvjeta_2011_co2['godina'] = 2011
+
+    rasvjeta_2019_co2 = rasvjeta_2019_co2.set_index('godina')
+    rasvjeta_2011_co2 = rasvjeta_2011_co2.set_index('godina')
+
+    comparison_fig_rasvjeta_co2 = base_inventory_2019.rasvjeta_bar(
+        rasvjeta_2011_co2,
+        rasvjeta_2019_co2,
+        2011,
+        2019,
+        title='Emisije CO2 (t)',
+    )
+    comparison_fig_rasvjeta_co2.savefig(output_dir / 'rasvjeta_co2_comparison.png', dpi=300, bbox_inches='tight')
 
     """ create supplementary output dir """
     supplementary_output = root_dir / 'output/supplementary_plots/'
